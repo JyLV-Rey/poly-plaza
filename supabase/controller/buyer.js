@@ -16,15 +16,33 @@ async function create_buyer(data) {
         password: hashed_password,
         phone: phone
       }
-    ]);
-
+    ])
+    .select()
+    .single();
+  
   if (error) {
     console.error('Error creating buyer:', error);
     throw error;
   } else {
     console.log('Buyer created successfully:', result);
-    return result;
   }
+
+  const current_buyer_id = result.id;
+
+  const { data: cart_result, error: cart_error } = await supabase
+    .from('cart')
+    .insert([
+      {
+        buyer_id: current_buyer_id
+      }
+    ]);
+
+  if (cart_error) {
+    console.error('Error creating cart for buyer:', cart_error);
+    throw cart_error;
+  }
+
+  return result;
 }
 
 async function get_buyer_by_id(data) {
