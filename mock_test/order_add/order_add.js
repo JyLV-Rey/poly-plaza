@@ -14,6 +14,5 @@ const data2 = require('./orderlinemain.json');
 })()
 
 async() => {
-  // Prints the first 10 numbers
   
 }

@@ -1,0 +1,28 @@
+import React, { useState } from 'react';
+import categories from './categories.json';
+
+function CategoryDropdown() {
+  const [selectedCategory, setSelectedCategory] = useState('');
+
+  const handleChange = (e) => {
+    setSelectedCategory(e.target.value);
+  };
+
+  return (
+    <div>
+      <label htmlFor="category-select">Choose a category: </label>
+      <select id="category-select" value={selectedCategory} onChange={handleChange}>
+        <option value="">--Please choose an option--</option>
+        {categories.map((item, index) => (
+          <option key={index} value={item.category}>
+            {item.category}
+          </option>
+        ))}
+      </select>
+
+      {selectedCategory && <p>You selected: {selectedCategory}</p>}
+    </div>
+  );
+}
+
+export default CategoryDropdown;
