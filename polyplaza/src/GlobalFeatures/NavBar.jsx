@@ -14,9 +14,6 @@ function NavBar() {
     localStorage.removeItem("userLastName");
     localStorage.removeItem("userSellerId");
     localStorage.removeItem("userSellerName");
-
-
-
     navigate('/account/login');
     window.location.reload();
   }

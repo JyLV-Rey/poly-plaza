@@ -2,6 +2,7 @@ import {Routes, Route} from 'react-router-dom';
 import NavBar from './GlobalFeatures/NavBar';
 import HomePage from './Pages/HomePage/HomePage';
 import SearchPage from './Pages/SearchPage/SearchPage';
+import ViewProduct from './Pages/ViewProduct/ViewProduct';
 import LoginAccount from './Pages/Account/LoginAccount/LoginAccount';
 import CreateAccount from './Pages/Account/CreateAccount/CreateAccount';
 import BuyerDashboard from './Pages/Dashboard/BuyerDashboard/BuyerDashboard';
@@ -21,6 +22,7 @@ function App() {
           <Route path="/account/create" element={<CreateAccount />} />
           <Route path="/dashboard/buyer" element={<BuyerDashboard />} />
           <Route path="/dashboard/seller" element={<SellerDashboard />} />
+          <Route path="/product/view" element={<ViewProduct />} />
         </Routes>
       </div>
     </>

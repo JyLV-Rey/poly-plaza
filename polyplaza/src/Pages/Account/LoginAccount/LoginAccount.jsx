@@ -39,13 +39,16 @@ function LoginAccount() {
       return;
     }
 
+    console.log(data);
+
     // Save userId to context
     setUserId(data.buyer_id);
     setUserEmail(data.email);
     setUserFirstName(data.first_name);
     setUserLastName(data.last_name);
-    setUserSellerName(data.seller.seller_name);
-    setUserSellerId(data.seller.seller_id);
+    setUserSellerName(data.seller[0]?.seller_name || '');
+    setUserSellerId(data.seller[0]?.seller_id || null) ;
+
 
     // Navigate to dashboard or home
     navigate("/");
