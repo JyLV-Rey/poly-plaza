@@ -5,7 +5,7 @@ import { useUser } from "../Pages/UserContext"
 import { useNavigate } from "react-router-dom"
 
 function NavBar() {
-  const { userId, userFirstName, userLastName } = useUser()
+  const { userId, userFirstName, userLastName, userSellerId } = useUser()
   const TextClass =
     " text-lg text-neutral-700 hover:text-neutral-200 p-2 hover:text-2xl font-medium hover:font-extrabold hover:bg-neutral-500 rounded-md duration-200 ease-(--my-beizer)"
   const navigate = useNavigate()
@@ -36,10 +36,10 @@ function NavBar() {
           <Link to="/cart" className={`${TextClass}`}>
             Cart
           </Link>
-          <Link to="/dashboard/buyer" className={`${TextClass}`}>
+          <Link to={`/dashboard/buyer?buyerId=${userId}`} className={`${TextClass}`}>
             Your Profile
           </Link>
-          <Link to="/dashboard/seller" className={`${TextClass}`}>
+          <Link to={`/dashboard/seller?sellerId=${userSellerId}`} className={`${TextClass}`}>
             Seller Dashboard
           </Link>
           {userId == null && (
