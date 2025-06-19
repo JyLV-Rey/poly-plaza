@@ -10,6 +10,7 @@ import SellerDashboard from "./Pages/Dashboard/SellerDashbord/SellerDashboard"
 import CartPage from "./Pages/CartPage/CartPage"
 import ConfirmOrderPage from "./Pages/BuyPage/ConfirmOrderPage"
 import ViewReceipt from "./Pages/ViewReceipt/ViewReceipt"
+import Footer from "./GlobalFeatures/Footer"
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/product/confirm_order" element={<ConfirmOrderPage />} />
           <Route path="/product/view_receipt" element={<ViewReceipt />} />
         </Routes>
+        <Footer />
       </div>
     </>
   )
