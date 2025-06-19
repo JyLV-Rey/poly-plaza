@@ -1,8 +1,11 @@
+"use client"
+
 import { useState, useEffect } from "react"
 import { useUser } from "../UserContext"
 import { supabase } from "../../supabase"
 import { useNavigate } from "react-router-dom"
 import CheckCredentials from "../CheckCredentials"
+import { ShoppingBag, Plus, Minus, Trash2, ShoppingCart } from "lucide-react"
 
 function CartPage() {
   const [cartItems, setCartItems] = useState([])
@@ -55,10 +58,18 @@ function CartPage() {
     }
 
     try {
+      // Update the local state immediately to prevent reordering
+      setCartItems((prevItems) =>
+        prevItems.map((item) => (item.cart_item_id === cartItemId ? { ...item, quantity: newQuantity } : item)),
+      )
+
       const { error } = await supabase.from("cartitem").update({ quantity: newQuantity }).eq("cart_item_id", cartItemId)
 
-      if (error) throw error
-      fetchCartItems()
+      if (error) {
+        // If error, revert the change
+        fetchCartItems()
+        throw error
+      }
     } catch (error) {
       console.error("Error updating quantity:", error)
     }
@@ -70,7 +81,6 @@ function CartPage() {
 
       if (error) throw error
       fetchCartItems()
-      // Remove from selected items if it was selected
       setSelectedItems((prev) => {
         const newSet = new Set(prev)
         newSet.delete(cartItemId)
@@ -107,11 +117,8 @@ function CartPage() {
       return
     }
 
-    // Convert selected items to cart item IDs
     const selectedCartItemIds = Array.from(selectedItems)
     const cartItemIdsParam = selectedCartItemIds.join(",")
-
-    // Navigate to confirm order page with cart items
     navigate(`/product/confirm_order?cartItems=${cartItemIdsParam}`)
   }
 
@@ -122,8 +129,16 @@ function CartPage() {
   if (loading) {
     return (
       <CheckCredentials>
-        <div className="flex justify-center items-center min-h-screen">
-          <p className="text-2xl">Loading cart...</p>
+        <div className="min-h-screen bg-gray-50 pt-20 flex justify-center items-center">
+          <div className="bg-white rounded-2xl shadow-sm p-8">
+            <div className="animate-pulse flex space-x-4">
+              <div className="rounded-full bg-gray-200 h-12 w-12"></div>
+              <div className="flex-1 space-y-2 py-1">
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </CheckCredentials>
     )
@@ -131,120 +146,144 @@ function CartPage() {
 
   return (
     <CheckCredentials>
-      <div className="container mx-auto px-4 py-8 mt-16">
-        <h1 className="text-4xl font-bold text-center mb-8 text-black">Your Cart</h1>
-
-        {cartItems.length === 0 ? (
-          <div className="text-center">
-            <p className="text-xl text-gray-600 mb-4 text-black">Your cart is empty</p>
-            <button
-              onClick={() => navigate("/search")}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Continue Shopping
-            </button>
+      <div className="min-h-screen bg-gray-50 pt-20">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center mb-4">
+              <ShoppingBag className="w-8 h-8 text-blue-600 mr-3" />
+              <h1 className="text-4xl font-bold text-gray-900">Your Cart</h1>
+            </div>
+            <p className="text-gray-600">Review your items and proceed to checkout</p>
           </div>
-        ) : (
-          <div className="max-w-4xl mx-auto text-black">
-            <div className="bg-white rounded-lg shadow-lg p-6">
+
+          {cartItems.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-12 max-w-md mx-auto">
+                <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-6" />
+                <h3 className="text-2xl font-semibold text-gray-900 mb-4">Your cart is empty</h3>
+                <p className="text-gray-600 mb-8">Discover amazing products and add them to your cart</p>
+                <button
+                  onClick={() => navigate("/search")}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-2xl transition-colors duration-200"
+                >
+                  Start Shopping
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
               {/* Select All Header */}
-              <div className="flex items-center justify-between mb-4 pb-4 border-b">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={selectedItems.size === cartItems.length && cartItems.length > 0}
-                    onChange={selectAllItems}
-                    className="mr-2 w-4 h-4"
-                  />
-                  <span className="font-semibold">
-                    Select All ({selectedItems.size}/{cartItems.length})
-                  </span>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-600">Cart Total: ₱{totalPrice.toFixed(2)}</p>
-                  {selectedItems.size > 0 && (
-                    <p className="text-lg font-bold text-green-600">Selected: ₱{selectedTotal.toFixed(2)}</p>
-                  )}
+              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedItems.size === cartItems.length && cartItems.length > 0}
+                      onChange={selectAllItems}
+                      className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <span className="font-semibold text-gray-900">
+                      Select All ({selectedItems.size}/{cartItems.length})
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-600">Cart Total: ₱{totalPrice.toFixed(2)}</p>
+                    {selectedItems.size > 0 && (
+                      <p className="text-lg font-bold text-blue-600">Selected: ₱{selectedTotal.toFixed(2)}</p>
+                    )}
+                  </div>
                 </div>
               </div>
 
               {/* Cart Items */}
-              {cartItems.map((item) => (
-                <div
-                  key={item.cart_item_id}
-                  className={`flex items-center border-b border-gray-200 py-4 last:border-b-0 ${
-                    selectedItems.has(item.cart_item_id) ? "bg-blue-50" : ""
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedItems.has(item.cart_item_id)}
-                    onChange={() => toggleItemSelection(item.cart_item_id)}
-                    className="mr-4 w-4 h-4"
-                  />
-
-                  <div className="flex-shrink-0 w-20 h-20">
-                    {item.product.product_image?.[0] && (
-                      <img
-                        src={item.product.product_image[0].image_url || "/placeholder.svg"}
-                        alt={item.product.name}
-                        className="w-full h-full object-cover rounded"
+              <div className="divide-y divide-gray-200">
+                {cartItems.map((item) => (
+                  <div
+                    key={item.cart_item_id}
+                    className={`p-6 transition-colors duration-200 ${
+                      selectedItems.has(item.cart_item_id) ? "bg-blue-50" : "hover:bg-gray-50"
+                    }`}
+                  >
+                    <div className="flex items-center space-x-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.has(item.cart_item_id)}
+                        onChange={() => toggleItemSelection(item.cart_item_id)}
+                        className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                       />
-                    )}
-                  </div>
 
-                  <div className="flex-grow ml-4">
-                    <h3 className="text-lg font-semibold">{item.product.name}</h3>
-                    <p className="text-gray-600">{item.product.description}</p>
-                    <p className="text-lg font-bold text-green-600">₱{item.product.price}</p>
-                  </div>
+                      <div className="flex-shrink-0 w-20 h-20">
+                        {item.product.product_image?.[0] && (
+                          <img
+                            src={item.product.product_image[0].image_url || "/placeholder.svg"}
+                            alt={item.product.name}
+                            className="w-full h-full object-cover rounded-xl"
+                          />
+                        )}
+                      </div>
 
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => updateQuantity(item.cart_item_id, item.quantity - 1)}
-                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-                    >
-                      -
-                    </button>
-                    <span className="mx-2 font-semibold">{item.quantity}</span>
-                    <button
-                      onClick={() => updateQuantity(item.cart_item_id, item.quantity + 1)}
-                      className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded"
-                    >
-                      +
-                    </button>
-                  </div>
+                      <div className="flex-grow min-w-0">
+                        <h3 className="text-lg font-semibold text-gray-900 truncate">{item.product.name}</h3>
+                        <p className="text-gray-600 text-sm mt-1">{item.product.description}</p>
+                        <p className="text-xl font-bold text-blue-600 mt-2">₱{item.product.price}</p>
+                      </div>
 
-                  <div className="ml-4 text-right">
-                    <p className="text-lg font-bold">₱{(item.product.price * item.quantity).toFixed(2)}</p>
-                    <button
-                      onClick={() => removeItem(item.cart_item_id)}
-                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-sm mt-1"
-                    >
-                      Remove
-                    </button>
+                      <div className="flex items-center space-x-3">
+                        <button
+                          onClick={() => updateQuantity(item.cart_item_id, item.quantity - 1)}
+                          className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors duration-200"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </button>
+                        <span className="text-lg font-semibold text-gray-900 min-w-[2rem] text-center">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => updateQuantity(item.cart_item_id, item.quantity + 1)}
+                          className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors duration-200"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <div className="text-right">
+                        <p className="text-xl font-bold text-gray-900">
+                          ₱{(item.product.price * item.quantity).toFixed(2)}
+                        </p>
+                        <button
+                          onClick={() => removeItem(item.cart_item_id)}
+                          className="mt-2 p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors duration-200"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
 
               {/* Bottom Actions */}
-              <div className="mt-6 pt-4 border-t border-gray-200">
+              <div className="bg-gray-50 px-6 py-6 border-t border-gray-200">
                 <div className="flex justify-between items-center">
                   <button
                     onClick={() => navigate("/search")}
-                    className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-2xl transition-colors duration-200"
                   >
                     Continue Shopping
                   </button>
 
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-6">
                     {selectedItems.size > 0 && (
-                      <span className="text-xl font-bold">Selected Total: ₱{selectedTotal.toFixed(2)}</span>
+                      <div className="text-right">
+                        <p className="text-sm text-gray-600">Selected Items</p>
+                        <p className="text-2xl font-bold text-blue-600">₱{selectedTotal.toFixed(2)}</p>
+                      </div>
                     )}
                     <button
                       onClick={buySelectedItems}
                       disabled={selectedItems.size === 0}
-                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-8 rounded-2xl transition-colors duration-200"
                     >
                       Buy Now ({selectedItems.size} items)
                     </button>
@@ -252,8 +291,8 @@ function CartPage() {
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </CheckCredentials>
   )
