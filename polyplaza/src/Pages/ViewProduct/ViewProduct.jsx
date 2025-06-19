@@ -4,6 +4,10 @@ import SearchBar from "../SearchPage/Components/SearchBar";
 import { supabase } from "../../supabase";
 import {Carousel}  from 'react-responsive-carousel';
 import Review from "./components/Review";
+import BuyButton from "./components/BuyButton";
+import QuantityButton from "./components/QuantityButton";
+import EditButton from "./components/EditButton";
+import CreateReview from "./components/CreateReview";
 
 function ViewProduct() {
   const [item, setItem] = useState([]);
@@ -12,6 +16,8 @@ function ViewProduct() {
   const [sellerReview, setSellerReview] = useState([]);
   const [searchParams] = useSearchParams();
   const productId = Number(searchParams.get('productId'));
+
+  const [quantity, setQuantity] = useState(1);
 
   const [showReviews, setShowReviews] = useState(false);
 
@@ -42,6 +48,10 @@ function ViewProduct() {
         ),
         order_item (
           quantity
+        )
+        price_history (
+          price,
+          date_set
         )
       `);
 
@@ -125,7 +135,7 @@ function ViewProduct() {
     <>
       <SearchBar />
       <div className='flex flex-row items-start flex-wrap justify-around min-h-screen w-screen'>
-        <div className="flex flex-row items-start justify-around h-full gap-30 w-fit rounded-xl m-10 mt-50 p-2 bg-neutral-100 shadow-2xl/40 shadow-black">
+        <div className="flex flex-row items-start justify-around h-full gap-30 w-fit rounded-xl mt-50 p-2 bg-neutral-100">
           <div className="flex flex-col justify-center items-center w-fit h-auto p-2 gap-10 shadow-2xl/20 bg-neutral-100">
               {
                 item.product_image?.map((image, index) => (
@@ -134,6 +144,15 @@ function ViewProduct() {
                   </div>
                 ))
               }
+              <div className="flex flex-col items-center justify-between h-fit w-full p-2">
+                {
+                  item.price_history?.map((price, index) => (
+                    <div key={index}>
+                      <p className='text-sm text-neutral-400'>₱{price.price}</p>
+                    </div>
+                  ))
+                }
+              </div>
           </div>
             <div className='flex flex-col w-full items-end gap-2'>
               <div className="flex flex-row items-center justify-between h-fit w-full p-2">
@@ -150,6 +169,11 @@ function ViewProduct() {
                     }
                   </p>
                   <p className='self-start text-end text-lg font-bold text-neutral-600'>{item.description}</p>
+                  <div className="flex flex-row self-start items-start justify-start w-fit gap-2">
+                    <BuyButton productId={item.product_id} quantity={quantity}></BuyButton>
+                    <QuantityButton quantity={quantity} setQuantity={setQuantity}></QuantityButton>
+                    <EditButton productId={item.product_id}></EditButton>
+                  </div>
                 </div>
                 
                 <div className="hover:scale-[102%] duration-200 ease-(--my-beizer) flex flex-row items-start justify-around h-full w-fit rounded-xl p-2 bg-neutral-100 hover:shadow-2xl/50 shadow-2xl/30 shadow-black">
@@ -177,6 +201,7 @@ function ViewProduct() {
                   }
                 </div> 
               }
+            <CreateReview productId={item.product_id}></CreateReview>
             </div>
           </div>
         </div>
