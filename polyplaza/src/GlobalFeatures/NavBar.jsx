@@ -30,9 +30,6 @@ function NavBar() {
           <Link to="/" className={`${TextClass}`}>
             Home
           </Link>
-          <Link to="/search" className={`${TextClass}`}>
-            Search
-          </Link>
           <Link to="/cart" className={`${TextClass}`}>
             Cart
           </Link>

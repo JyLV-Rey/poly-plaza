@@ -130,7 +130,6 @@ function ViewProduct() {
 
   return (
     <>
-      <SearchBar />
       <div className="flex flex-row items-start flex-wrap justify-around min-h-screen w-screen">
         <div className="flex flex-row items-start justify-around h-full gap-30 w-fit rounded-xl mt-50 p-2 bg-neutral-100">
           <div className="flex flex-col justify-center items-center w-fit h-auto p-2 gap-10 shadow-2xl/20 bg-neutral-100">
