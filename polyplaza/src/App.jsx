@@ -1,15 +1,17 @@
-import {Routes, Route} from 'react-router-dom';
-import NavBar from './GlobalFeatures/NavBar';
-import HomePage from './Pages/HomePage/HomePage';
-import SearchPage from './Pages/SearchPage/SearchPage';
-import ViewProduct from './Pages/ViewProduct/ViewProduct';
-import LoginAccount from './Pages/Account/LoginAccount/LoginAccount';
-import CreateAccount from './Pages/Account/CreateAccount/CreateAccount';
-import BuyerDashboard from './Pages/Dashboard/BuyerDashboard/BuyerDashboard';
-import SellerDashboard from './Pages/Dashboard/SellerDashbord/SellerDashboard';
+import { Routes, Route } from "react-router-dom"
+import NavBar from "./GlobalFeatures/NavBar"
+import HomePage from "./Pages/HomePage/HomePage"
+import SearchPage from "./Pages/SearchPage/SearchPage"
+import ViewProduct from "./Pages/ViewProduct/ViewProduct"
+import LoginAccount from "./Pages/Account/LoginAccount/LoginAccount"
+import CreateAccount from "./Pages/Account/CreateAccount/CreateAccount"
+import BuyerDashboard from "./Pages/Dashboard/BuyerDashboard/BuyerDashboard"
+import SellerDashboard from "./Pages/Dashboard/SellerDashbord/SellerDashboard"
+import CartPage from "./Pages/CartPage/CartPage"
+import ConfirmOrderPage from "./Pages/BuyPage/ConfirmOrderPage"
+import ViewReceipt from "./Pages/ViewReceipt/ViewReceipt"
 
 function App() {
-
   return (
     <>
       <div div className="flex flex-col items-start justify-start min-h-screen w-screen bg-neutral-100">
@@ -23,6 +25,9 @@ function App() {
           <Route path="/dashboard/buyer" element={<BuyerDashboard />} />
           <Route path="/dashboard/seller" element={<SellerDashboard />} />
           <Route path="/product/view" element={<ViewProduct />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/product/confirm_order" element={<ConfirmOrderPage />} />
+          <Route path="/product/view_receipt" element={<ViewReceipt />} />
         </Routes>
       </div>
     </>
