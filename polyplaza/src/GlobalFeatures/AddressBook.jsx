@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useUser } from "../Pages/UserContext";
 import { supabase } from "../supabase";
 
-function AddressBook({ setFunction, shouldEdit = false }) {
+function AddressBook({ setFunction, shouldEdit = false, returnAddress }) {
   const [address, setAddress] = useState([]);
+  const [isOpen, setIsOpen] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(null); // For selected radio
   const { userId } = useUser();
 
@@ -21,12 +22,17 @@ function AddressBook({ setFunction, shouldEdit = false }) {
 
   return (
     <div className="flex flex-col items-center w-fit rounded-2xl border-2 border-neutral-400 bg-neutral-100 shadow-2xl/10 m-10 p-2 ">
-      <p className="text-2xl text-center font-extrabold text-neutral-600 m-2 mb-4">
-        Address Book
-      </p>
-
+      <div className="flex flex-row gap-10 justify-center items-center mt-2 mb-2">
+        <p className="text-2xl text-center font-extrabold text-neutral-600">
+          Address Book
+        </p>
+        <button className="text-2xl text-center font-extrabold text-neutral-600 w-20 border-2 hover:bg-neutral-400 hover:text-neutral-50 duration-200 ease-(--my-beizer) border-neutral-400 rounded-2xl" onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? '-' : '+'}
+        </button>
+      </div>
+    { isOpen &&
      <div className="w-fit flex flex-col gap-2 border-2 border-neutral-400 p-5 rounded-2xl">
-        <div className={`grid bg-neutral-300 border-2 border-neutral-400 text-neutral-600 text-2xl font-extrabold rounded-xl p-2 ${shouldEdit ? 'grid-cols-4' : 'grid-cols-3'}`}>
+        <div className={`grid bg-neutral-300 border-2 border-neutral-400 text-neutral-600 text-2xl font-extrabold rounded-xl ${shouldEdit ? 'grid-cols-4' : 'grid-cols-3'}`}>
           <p className="text-center ">Street</p>
           <p className="text-center">City</p>
           <p className="text-center">Postal Code</p>
@@ -60,6 +66,8 @@ function AddressBook({ setFunction, shouldEdit = false }) {
           ))
         }
       </div>
+    }
+
     </div>
   );
 }

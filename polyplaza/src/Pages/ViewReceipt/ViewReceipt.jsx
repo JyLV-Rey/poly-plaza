@@ -9,6 +9,7 @@ import { CheckCircle, Package, CreditCard, Truck, MapPin, Store, Calendar, User 
 function ViewReceipt() {
   const [searchParams] = useSearchParams()
   const orderId = Number(searchParams.get("orderId"))
+  const justOrdered = searchParams.get("justOrdered");
   const [orderData, setOrderData] = useState(null)
   const [deliveryData, setDeliveryData] = useState(null)
   const [paymentData, setPaymentData] = useState(null)
@@ -150,18 +151,21 @@ function ViewReceipt() {
 
   return (
     <CheckCredentials>
-      <div className="min-h-screen bg-gray-50 pt-20">
+      <div className="min-h-screen min-w-screen bg-gray-50 pt-20">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center mb-4">
-              <CheckCircle className="w-12 h-12 text-green-600 mr-4" />
-              <div>
-                <h1 className="text-4xl font-bold text-green-600">Order Confirmed!</h1>
-                <p className="text-xl text-gray-600 mt-2">Thank you for your purchase</p>
+          { justOrdered &&
+            <div className="text-center mb-8">
+              <div className="flex items-center justify-center mb-4">
+                <CheckCircle className="w-12 h-12 text-green-600 mr-4" />
+                <div>
+                  <h1 className="text-4xl font-bold text-green-600">Order Confirmed!</h1>
+                  <p className="text-xl text-gray-600 mt-2">Thank you for your purchase</p>
+                </div>
               </div>
             </div>
-          </div>
+          }
+
 
           <div className="space-y-6">
             {/* Order & Customer Info */}

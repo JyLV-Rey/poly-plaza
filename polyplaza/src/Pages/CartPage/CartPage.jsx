@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useUser } from "../UserContext"
 import { supabase } from "../../supabase"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import CheckCredentials from "../CheckCredentials"
 import { ShoppingBag, Plus, Minus, Trash2, ShoppingCart } from "lucide-react"
 
@@ -146,8 +146,8 @@ function CartPage() {
 
   return (
     <CheckCredentials>
-      <div className="min-h-screen bg-gray-50 pt-20">
-        <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
+      <div className="min-h-screen min-w-screen flex justify-start items-start mt-20 bg-gray-50">
+        <div className="w-full mr-50 ml-50 px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
@@ -199,6 +199,7 @@ function CartPage() {
               {/* Cart Items */}
               <div className="divide-y divide-gray-200">
                 {cartItems.map((item) => (
+                  
                   <div
                     key={item.cart_item_id}
                     className={`p-6 transition-colors duration-200 ${
@@ -206,16 +207,18 @@ function CartPage() {
                     }`}
                   >
                     <div className="flex items-center space-x-4">
+                    
                       <input
                         type="checkbox"
                         checked={selectedItems.has(item.cart_item_id)}
                         onChange={() => toggleItemSelection(item.cart_item_id)}
                         className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                       />
-
+                      <Link key={item.cart_item_id} to={`/product/view?productId=${item.product.product_id}`}  className='flex w-full'>
                       <div className="flex-shrink-0 w-20 h-20">
                         {item.product.product_image?.[0] && (
                           <img
+                            style={{ imageRendering: "pixelated" }}
                             src={item.product.product_image[0].image_url || "/placeholder.svg"}
                             alt={item.product.name}
                             className="w-full h-full object-cover rounded-xl"
@@ -228,7 +231,7 @@ function CartPage() {
                         <p className="text-gray-600 text-sm mt-1">{item.product.description}</p>
                         <p className="text-xl font-bold text-blue-600 mt-2">₱{item.product.price}</p>
                       </div>
-
+                    </Link>
                       <div className="flex items-center space-x-3">
                         <button
                           onClick={() => updateQuantity(item.cart_item_id, item.quantity - 1)}

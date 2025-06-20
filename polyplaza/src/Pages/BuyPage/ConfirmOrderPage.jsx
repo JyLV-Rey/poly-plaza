@@ -206,7 +206,7 @@ function ConfirmOrderPage() {
         await supabase.from("cartitem").delete().in("cart_item_id", cartItemIdArray)
       }
 
-      navigate(`/product/view_receipt?orderId=${order.order_id}`)
+      navigate(`/product/view_receipt?orderId=${order.order_id}&justOrdered=true`)
     } catch (error) {
       console.error("Error creating order:", error)
       alert(`Error creating order: ${error.message}. Please try again.`)
@@ -279,153 +279,156 @@ function ConfirmOrderPage() {
 
   return (
     <CheckCredentials>
-      <div className="min-h-screen bg-gray-50 pt-20 text-black">
-        <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center mb-4">
-              <CheckCircle className="w-8 h-8 text-blue-600 mr-3" />
-              <h1 className="text-4xl font-bold text-gray-900">Confirm Your Order</h1>
-            </div>
-            <p className="text-gray-600">Review your order details and complete your purchase</p>
-          </div>
-
-          <div className="space-y-6">
-            {/* Order Details */}
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center mb-6">
-                <ShoppingBag className="w-6 h-6 text-blue-600 mr-3" />
-                <h2 className="text-2xl font-bold text-gray-900">Order Details ({orderItems.length} items)</h2>
+      <div className="min-h-screen min-w-screen">
+        <div className="p-20 bg-gray-50 pt-20 text-black">
+          <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <div className="flex items-center justify-center mb-4">
+                <CheckCircle className="w-8 h-8 text-blue-600 mr-3" />
+                <h1 className="text-4xl font-bold text-gray-900">Confirm Your Order</h1>
               </div>
-
-              <div className="space-y-4">
-                {orderItems.map((item, index) => (
-                  <div key={index} className="flex items-center p-4 bg-gray-50 rounded-2xl">
-                    {item.product.product_image?.[0] && (
-                      <img
-                        src={item.product.product_image[0].image_url || "/placeholder.svg"}
-                        alt={item.product.name}
-                        className="w-20 h-20 object-cover rounded-xl mr-4"
-                      />
-                    )}
-                    <div className="flex-grow">
-                      <h3 className="text-xl font-semibold text-gray-900">{item.product.name}</h3>
-                      <p className="text-gray-600">{item.product.description}</p>
-                      <p className="text-sm text-gray-500">Seller: {item.product.seller.seller_name}</p>
-                      <p className="text-lg font-bold text-blue-600">
-                        ₱{item.product.price} x {item.quantity}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xl font-bold text-gray-900">
-                        ₱{(item.product.price * item.quantity).toFixed(2)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="text-right pt-6 border-t border-gray-200 mt-6">
-                <p className="text-3xl font-bold text-blue-600">Total: ₱{totalPrice.toFixed(2)}</p>
-              </div>
+              <p className="text-gray-600">Review your order details and complete your purchase</p>
             </div>
 
-            {/* Seller Info */}
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center mb-6">
-                <Store className="w-6 h-6 text-blue-600 mr-3" />
-                <h2 className="text-2xl font-bold text-gray-900">
-                  Seller Information ({uniqueSellers.length} seller{uniqueSellers.length > 1 ? "s" : ""})
-                </h2>
-              </div>
+            <div className="space-y-6">
+              {/* Order Details */}
+              <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center mb-6">
+                  <ShoppingBag className="w-6 h-6 text-blue-600 mr-3" />
+                  <h2 className="text-2xl font-bold text-gray-900">Order Details ({orderItems.length} items)</h2>
+                </div>
 
-              <div className="space-y-3">
-                {uniqueSellers.map((sellerId) => {
-                  const sellerItem = orderItems.find((item) => item.product.seller.seller_id === sellerId)
-                  const seller = sellerItem.product.seller
-                  return (
-                    <div key={sellerId} className="bg-gray-50 p-4 rounded-2xl">
-                      <p className="font-semibold text-gray-900">{seller.seller_name}</p>
-                      {seller.address && (
-                        <p className="text-gray-600">
-                          {seller.address.street}, {seller.address.city}
-                          {seller.address.postal_code && `, ${seller.address.postal_code}`}
-                        </p>
+                <div className="space-y-4">
+                  {orderItems.map((item, index) => (
+                    <div key={index} className="flex items-center p-4 bg-gray-50 rounded-2xl">
+                      {item.product.product_image?.[0] && (
+                        <img
+                          src={item.product.product_image[0].image_url || "/placeholder.svg"}
+                          alt={item.product.name}
+                          className="w-20 h-20 object-cover rounded-xl mr-4"
+                        />
                       )}
+                      <div className="flex-grow">
+                        <h3 className="text-xl font-semibold text-gray-900">{item.product.name}</h3>
+                        <p className="text-gray-600">{item.product.description}</p>
+                        <p className="text-sm text-gray-500">Seller: {item.product.seller.seller_name}</p>
+                        <p className="text-lg font-bold text-blue-600">
+                          ₱{item.product.price} x {item.quantity}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xl font-bold text-gray-900">
+                          ₱{(item.product.price * item.quantity).toFixed(2)}
+                        </p>
+                      </div>
                     </div>
-                  )
-                })}
-              </div>
-            </div>
+                  ))}
+                </div>
 
-            {/* Address Selection */}
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center mb-6">
-                <MapPin className="w-6 h-6 text-blue-600 mr-3" />
-                <h2 className="text-2xl font-bold text-gray-900">Delivery Address</h2>
-              </div>
-              <AddressBook setFunction={setSelectedAddressIndex} />
-            </div>
-
-            {/* Payment Method */}
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center mb-6">
-                <CreditCard className="w-6 h-6 text-blue-600 mr-3" />
-                <h2 className="text-2xl font-bold text-gray-900">Payment Method</h2>
+                <div className="text-right pt-6 border-t border-gray-200 mt-6">
+                  <p className="text-3xl font-bold text-blue-600">Total: ₱{totalPrice.toFixed(2)}</p>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {paymentOptions.map((method) => (
-                  <button
-                    key={method.id}
-                    onClick={() => setPaymentMethod(method.id)}
-                    className={`p-6 border-2 rounded-2xl font-semibold transition-all duration-200 ${
-                      paymentMethod === method.id
-                        ? "border-blue-500 bg-blue-50 text-blue-700"
-                        : "border-gray-300 hover:border-blue-300 hover:bg-gray-50"
-                    }`}
-                  >
-                    <div className="text-2xl mb-2">{method.icon}</div>
-                    <div>{method.name}</div>
-                  </button>
-                ))}
+              {/* Seller Info */}
+              <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center mb-6">
+                  <Store className="w-6 h-6 text-blue-600 mr-3" />
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Seller Information ({uniqueSellers.length} seller{uniqueSellers.length > 1 ? "s" : ""})
+                  </h2>
+                </div>
+
+                <div className="space-y-3">
+                  {uniqueSellers.map((sellerId) => {
+                    const sellerItem = orderItems.find((item) => item.product.seller.seller_id === sellerId)
+                    const seller = sellerItem.product.seller
+                    return (
+                      <div key={sellerId} className="bg-gray-50 p-4 rounded-2xl">
+                        <p className="font-semibold text-gray-900">{seller.seller_name}</p>
+                        {seller.address && (
+                          <p className="text-gray-600">
+                            {seller.address.street}, {seller.address.city}
+                            {seller.address.postal_code && `, ${seller.address.postal_code}`}
+                          </p>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
-            </div>
 
-            {/* Courier Service */}
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center mb-6">
-                <Truck className="w-6 h-6 text-blue-600 mr-3" />
-                <h2 className="text-2xl font-bold text-gray-900">Courier Service</h2>
+              {/* Address Selection */}
+              <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center mb-6">
+                  <MapPin className="w-6 h-6 text-blue-600 mr-3" />
+                  <h2 className="text-2xl font-bold text-gray-900">Delivery Address</h2>
+                </div>
+                <AddressBook setFunction={setSelectedAddressIndex} />
               </div>
 
-              <select
-                value={courierService}
-                onChange={(e) => setCourierService(e.target.value)}
-                className="w-full p-4 border-2 border-gray-300 rounded-2xl focus:border-blue-500 focus:outline-none text-lg"
-              >
-                <option value="">Select a courier service</option>
-                {courierOptions.map((courier) => (
-                  <option key={courier} value={courier}>
-                    {courier}
-                  </option>
-                ))}
-              </select>
-            </div>
+              {/* Payment Method */}
+              <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center mb-6">
+                  <CreditCard className="w-6 h-6 text-blue-600 mr-3" />
+                  <h2 className="text-2xl font-bold text-gray-900">Payment Method</h2>
+                </div>
 
-            {/* Confirm Button */}
-            <div className="text-center pt-6">
-              <button
-                onClick={confirmOrder}
-                disabled={loading}
-                className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 px-12 rounded-2xl text-xl transition-colors duration-200"
-              >
-                {loading ? "Processing..." : `Confirm Order - ₱${totalPrice.toFixed(2)}`}
-              </button>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {paymentOptions.map((method) => (
+                    <button
+                      key={method.id}
+                      onClick={() => setPaymentMethod(method.id)}
+                      className={`p-6 border-2 rounded-2xl font-semibold transition-all duration-200 ${
+                        paymentMethod === method.id
+                          ? "border-blue-500 bg-blue-50 text-blue-700"
+                          : "border-gray-300 hover:border-blue-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      <div className="text-2xl mb-2">{method.icon}</div>
+                      <div>{method.name}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Courier Service */}
+              <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center mb-6">
+                  <Truck className="w-6 h-6 text-blue-600 mr-3" />
+                  <h2 className="text-2xl font-bold text-gray-900">Courier Service</h2>
+                </div>
+
+                <select
+                  value={courierService}
+                  onChange={(e) => setCourierService(e.target.value)}
+                  className="w-full p-4 border-2 border-gray-300 rounded-2xl focus:border-blue-500 focus:outline-none text-lg"
+                >
+                  <option value="">Select a courier service</option>
+                  {courierOptions.map((courier) => (
+                    <option key={courier} value={courier}>
+                      {courier}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Confirm Button */}
+              <div className="text-center pt-6">
+                <button
+                  onClick={confirmOrder}
+                  disabled={loading}
+                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 px-12 rounded-2xl text-xl transition-colors duration-200"
+                >
+                  {loading ? "Processing..." : `Confirm Order - ₱${totalPrice.toFixed(2)}`}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
     </CheckCredentials>
   )
 }

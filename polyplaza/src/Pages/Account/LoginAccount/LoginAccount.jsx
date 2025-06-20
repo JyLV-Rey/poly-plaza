@@ -31,6 +31,7 @@ function LoginAccount() {
         )
       `)
       .eq("email", email)
+      .eq("is_deleted", false)
       .maybeSingle();
 
     console.log("data", data);
@@ -38,8 +39,6 @@ function LoginAccount() {
       setWrongAttempt(true);
       return;
     }
-
-    console.log(data);
 
     // Save userId to context
     setUserId(data.buyer_id);

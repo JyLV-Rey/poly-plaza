@@ -196,8 +196,9 @@ function HomePage() {
         </div>
       </div>
 
+      <div className="p-20">
       {/* Categories Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Shop by Category</h2>
         <div className="relative flex items-center">
           {/* Left Arrow - Outside container */}
@@ -239,49 +240,51 @@ function HomePage() {
           )}
         </div>
       </div>
-
-      {/* Trending Now Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-2">
-            <TrendingUp className="w-6 h-6 text-orange-500" />
-            <h2 className="text-2xl font-bold text-gray-900">Trending Now</h2>
+      
+      
+        {/* Trending Now Section */}
+        <div className=" mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-2">
+              <TrendingUp className="w-6 h-6 text-orange-500" />
+              <h2 className="text-2xl font-bold text-gray-900">Trending Now</h2>
+            </div>
+            <Link
+              to="/search?sortBy=orders&isDescending=Descending"
+              className="text-blue-600 hover:text-blue-700 font-medium flex items-center space-x-1"
+            >
+              <span>View All</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
           </div>
-          <Link
-            to="/search?sortBy=orders&isDescending=Descending"
-            className="text-blue-600 hover:text-blue-700 font-medium flex items-center space-x-1"
-          >
-            <span>View All</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {trendingProducts.map((product) => (
-            <ProductCard key={product.product_id} product={product} />
-          ))}
-        </div>
-      </div>
-
-      {/* View All Products Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-2">
-            <Package className="w-6 h-6 text-green-500" />
-            <h2 className="text-2xl font-bold text-gray-900">Featured Products</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {trendingProducts.map((product) => (
+              <ProductCard key={product.product_id} product={product} />
+            ))}
           </div>
-          <Link to="/search" className="text-blue-600 hover:text-blue-700 font-medium flex items-center space-x-1">
-            <span>View All Products</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.product_id} product={product} />
-          ))}
+
+        {/* View All Products Section */}
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-2">
+              <Package className="w-6 h-6 text-green-500" />
+              <h2 className="text-2xl font-bold text-gray-900">Featured Products</h2>
+            </div>
+            <Link to="/search" className="text-blue-600 hover:text-blue-700 font-medium flex items-center space-x-1">
+              <span>View All Products</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {featuredProducts.map((product) => (
+              <ProductCard key={product.product_id} product={product} />
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -11,7 +11,7 @@ function SearchItems() {
   const maxPrice = searchParams.get('maxPrice');
 
   return (
-     <div className="flex flex-row items-center flex-wrap justify-around h-auto min-w-screen rounded-xl m-2 mt-40 p-2 gap-2">
+    <div>
       <ProductList
         searchTerm={searchTerm}
         searchCategory={searchCategory}

@@ -1,19 +1,26 @@
 import { useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { supabase } from '../../../supabase';
+import { getTotalSpent, getTotalOrdersPlaced } from './components/userAggregate';
 import CheckCredentials from '../../CheckCredentials';
 import BuyerTopCategoryDoughnut from './components/BuyerTopCategoryDoughnut';
 import BuyerSpendLineChart from './components/BuyerSpendLineChart';
-import { useEffect, useState } from 'react';
-import { supabase } from '../../../supabase';
 import BuyerSpendByCategoryBar from './components/BuyerSpendByCategoryBar';
 import BuyerPurchaseFrequencyBar from './components/BuyerPurchaseFrequencyBar';
 import BuyerTopProductsBar from './components/BuyerTopProductsBar';
 import BuyerReviewRatingBar from './components/BuyerReviewRatingBar';
+import BuyerPreferredSellersDoughnut from './components/BuyerPreferredSellersDoughnut';
+import BuyerPaymentMethodPie from './components/BuyerPaymentMethodPie';
+import ChartBox from '../ChartBox';
+import PieChartBox from '../PieChartBox';
 
 function BuyerDashboard() {
   const [searchParams] = useSearchParams();
   const buyerId = searchParams.get('buyerId');
 
   const [userData, setUserData] = useState(null);
+  const [totalSpent, setTotalSpent] = useState(0);
+  const [totalOrders, setTotalOrders] = useState(0);
 
   useEffect(() => {
     async function fetchAndSetUserData() {
@@ -30,6 +37,17 @@ function BuyerDashboard() {
 
       setUserData(data);
       //console.log("userData:", data);
+
+    async function load() {
+      const spent = await getTotalSpent(buyerId);
+      const orders = await getTotalOrdersPlaced(buyerId);
+      console.log('Total spent ₱', spent);
+      console.log('Total orders', orders);
+
+      setTotalOrders(orders);
+      setTotalSpent(spent);
+    }
+    load();
     }
 
     fetchAndSetUserData();
@@ -40,55 +58,52 @@ function BuyerDashboard() {
       <CheckCredentials>
         <div className='mt-20 flex flex-col p-10'>
 
-          <div className='flex flex-col gap-2'>
-            <h1 className='text-4xl text-neutral-500 text-start font-extrabold'>Dashboard for {userData?.first_name} {userData?.last_name}</h1>
-            <h2 className='text-xl text-neutral-400 text-start font-bold'>Email: {userData?.email}</h2>
-            <h2 className='text-lg text-neutral-400 text-start font-medium'>Date Joined: {new Date(userData?.created_at).toLocaleString()}</h2>
+          <div className='flex flex-row justify-between w-full'>
+            <div className='flex flex-col gap-2'>
+              <h1 className='text-4xl text-neutral-700 text-start font-extrabold'>{userData?.first_name} {userData?.last_name}'s Profile</h1>
+              <h2 className='text-xl text-neutral-600 text-start font-bold'>Email: {userData?.email}</h2>
+              <h2 className='text-lg text-neutral-500 text-start font-medium'>Date Joined: {new Date(userData?.created_at).toLocaleString()}</h2>
+              <h2 className='text-lg text-neutral-500 text-start font-medium'>Buyer ID: {buyerId}</h2>
+            </div>
+            <div className='flex flex-col gap-2'>
+              <h1 className='text-4xl text-neutral-700 text-end font-extrabold'>Total Spent: ₱{totalSpent.toLocaleString()}</h1>
+              <h2 className='text-xl text-neutral-500 text-end font-bold'>Total Orders: {totalOrders.toLocaleString()}</h2>
+            </div>
           </div>
 
-          <div className=' flex flex-row gap-5 mt-5 flex-wrap justify-around flex-grow items-center'>
+          <div className=' flex flex-row gap-2 mt-5 flex-wrap justify-around flex-grow items-center'>
 
-            <div className='flex flex-col p-5 border-2 bg-neutral-100 hover:scale-105 hover:shadow-2xl shadow-xl duration-200 ease-(--my-beizer) rounded-xl gap-3'>
-              <p className='text-xl text-neutral-500 text-center font-extrabold'>Most Bought Categories </p>
-              <div className='flex flex-col w-full h-full '>
-                <BuyerTopCategoryDoughnut buyerId={buyerId} />
-              </div>
-            </div>
+          <PieChartBox title="Most Bought Categories">
+            <BuyerTopCategoryDoughnut buyerId={buyerId} />
+          </PieChartBox>
 
-            <div className='flex flex-col p-5 border-2 bg-neutral-100 hover:scale-105 hover:shadow-2xl shadow-xl duration-200 ease-(--my-beizer) rounded-xl gap-3'>
-              <p className='text-xl text-neutral-500 text-center font-extrabold'>Spending Over the Months</p>
-              <div className='flex flex-col w-150 h-full '>
-                <BuyerSpendLineChart buyerId={buyerId} />
-              </div>
-            </div>
+          <ChartBox title="Spending Over The Months">
+            <BuyerSpendLineChart buyerId={buyerId} />
+          </ChartBox>
 
-            <div className='flex flex-col p-5 border-2 bg-neutral-100 hover:scale-105 hover:shadow-2xl shadow-xl duration-200 ease-(--my-beizer) rounded-xl gap-3'>
-              <p className='text-xl text-neutral-500 text-center font-extrabold'>Spending Over Categories</p>
-              <div className='flex flex-col w-150 h-full '>
-                <BuyerSpendByCategoryBar buyerId={buyerId} />
-              </div>
-            </div>
+          <ChartBox title="Spending By Category">
+            <BuyerSpendByCategoryBar buyerId={buyerId} />
+          </ChartBox>
 
-            <div className='flex flex-col p-5 border-2 bg-neutral-100 hover:scale-105 hover:shadow-2xl shadow-xl duration-200 ease-(--my-beizer) rounded-xl gap-3'>
-              <p className='text-xl text-neutral-500 text-center font-extrabold'>Amount of Purchases Per Month</p>
-              <div className='flex flex-col w-150 h-full '>
-                <BuyerPurchaseFrequencyBar buyerId={buyerId} />
-              </div>
-            </div>
+          <ChartBox title="Purchase Frequency">
+            <BuyerPurchaseFrequencyBar buyerId={buyerId} />
+          </ChartBox>
           
-            <div className='flex flex-col p-5 border-2 h-fit bg-neutral-100 hover:scale-105 hover:shadow-2xl shadow-xl duration-200 ease-(--my-beizer) rounded-xl gap-3'>
-              <p className='text-xl text-neutral-500 text-center font-extrabold'>Most Paid Products</p>
-              <div className='flex flex-col w-100 h-full '>
-                <BuyerTopProductsBar buyerId={buyerId} />
-              </div>
-            </div>
+          <ChartBox title="Top Purchased Products">
+            <BuyerTopProductsBar buyerId={buyerId} />
+          </ChartBox>
 
-            <div className='flex flex-col p-5 border-2 h-fit bg-neutral-100 hover:scale-105 hover:shadow-2xl shadow-xl duration-200 ease-(--my-beizer) rounded-xl gap-3'>
-              <p className='text-xl text-neutral-500 text-center font-extrabold'>Review Distribution</p>
-              <div className='flex flex-col w-100 h-full '>
-                <BuyerReviewRatingBar buyerId={buyerId} />
-              </div>
-            </div>
+          <ChartBox title="Review Ratings">
+            <BuyerReviewRatingBar buyerId={buyerId} />
+          </ChartBox>
+
+          <PieChartBox title='Preferred Sellers'>
+            <BuyerPreferredSellersDoughnut buyerId={buyerId} />
+          </PieChartBox>
+
+          <PieChartBox title='Payment Methods'>
+            <BuyerPaymentMethodPie buyerId={buyerId} />
+          </PieChartBox>
 
           </div>
         </div>

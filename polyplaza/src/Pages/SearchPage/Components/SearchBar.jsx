@@ -40,7 +40,7 @@ function SearchBar() {
   }
 
   return (
-    <div className="bg-white shadow-sm border-b border-gray-200 fixed top-20 left-0 right-0 z-40 w-full">
+    <div className="bg-white shadow-sm border-b border-gray-200 fixed top-20 left-0 right-0 z-40 w-full text-neutral-600">
       <div className="w-full px-6 py-4">
         <form onSubmit={handleSearch} className="space-y-4 w-full">
           {/* Main Search Bar */}

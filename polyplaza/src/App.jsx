@@ -11,6 +11,7 @@ import CartPage from "./Pages/CartPage/CartPage"
 import ConfirmOrderPage from "./Pages/BuyPage/ConfirmOrderPage"
 import ViewReceipt from "./Pages/ViewReceipt/ViewReceipt"
 import Footer from "./GlobalFeatures/Footer"
+import ViewOrders from "./Pages/ViewOrders/ViewOrders"
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/product/confirm_order" element={<ConfirmOrderPage />} />
           <Route path="/product/view_receipt" element={<ViewReceipt />} />
+          <Route path="/orders" element={<ViewOrders/>}/>
         </Routes>
         <Footer />
       </div>

@@ -72,7 +72,7 @@ function CreateAccountBuyer() {
   };
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden">
+    <div className="relative w-screen min-h-screen overflow-hidden p-20">
       <img
         src="/splash-photo.png"
         alt="background"

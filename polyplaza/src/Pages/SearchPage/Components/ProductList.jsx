@@ -41,7 +41,7 @@ function ProductList({ searchTerm, searchCategory, isDescending, sortBy, maxPric
         order_item (
           quantity
         )
-      `)
+      `).eq("is_deleted", false);
 
     if (searchTerm) query = query.ilike("name", `%${searchTerm}%`)
     if (searchCategory) query = query.eq("category", searchCategory)
@@ -178,26 +178,27 @@ function ProductList({ searchTerm, searchCategory, isDescending, sortBy, maxPric
     return (
       <div
         key={item.product_id}
-        className="bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden group"
+        className="bg-white rounded-2xl border border-gray-200 shadow-lg/5 hover:shadow-xl hover:scale-105 ease-(--my-beizer) transition-all duration-300 overflow-hidden group"
       >
+        <div className="p-4">
         {/* Product Image */}
         <Link to={`/product/view?productId=${item.product_id}`}>
           <div className="aspect-square overflow-hidden bg-gray-100">
             <img
+              style={{ imageRendering: "pixelated" }}
               src={item.product_image?.[0]?.image_url || "/placeholder.svg?height=300&width=300"}
               alt={item.name}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
           </div>
-        </Link>
+        
 
         {/* Product Info */}
-        <div className="p-4">
-          <Link to={`/product/view?productId=${item.product_id}`}>
+        
             <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
               {item.name}
             </h3>
-          </Link>
+
 
           <div className="flex items-center space-x-2 mb-2">
             <div className="flex items-center space-x-1">
@@ -210,30 +211,37 @@ function ProductList({ searchTerm, searchCategory, isDescending, sortBy, maxPric
 
           <div className="flex items-center justify-between mb-3">
             <div className="flex flex-col">
-              <span className="text-xl font-bold text-gray-900">₱{item.price}</span>
+              <span className="text-xl font-bold text-gray-900">₱{item.price.toLocaleString()}</span>
               <span className="text-sm text-gray-500">{item.category}</span>
             </div>
             <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded-full">{item.seller?.seller_name}</span>
           </div>
-
+          </Link>
           {/* Action Buttons */}
-          <div className="flex space-x-2">
-            <button
-              onClick={() => addToCart(item.product_id)}
-              disabled={addingToCart[item.product_id]}
-              className="flex-1 flex items-center justify-center space-x-2 bg-blue-600 text-white py-2 px-3 rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-colors duration-200"
-            >
-              <ShoppingCart className="w-4 h-4" />
-              <span className="text-sm font-medium">{addingToCart[item.product_id] ? "Adding..." : "Add to Cart"}</span>
-            </button>
-
-            <Link
-              to={`/product/confirm_order?productId=${item.product_id}&quantity=1`}
-              className="flex items-center justify-center bg-green-600 text-white py-2 px-3 rounded-xl hover:bg-green-700 transition-colors duration-200"
-            >
-              <CreditCard className="w-4 h-4" />
-            </Link>
+          <div className="flex flex-row flex-grow h-20 gap-5 items-center justify-between">
+            <div className="flex justify-center flex-grow">
+              <button
+                onClick={() => addToCart(item.product_id)}
+                disabled={addingToCart[item.product_id]}
+                className="flex items-center justify-center gap-2 bg-blue-600 text-white py-2 px-3 rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-colors duration-200"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                <span className="text-sm font-medium">
+                  {addingToCart[item.product_id] ? "Adding..." : "Add to Cart"}
+                </span>
+              </button>
+            </div>
+            <div className="flex justify-center flex-grow">
+              <Link
+                to={`/product/confirm_order?productId=${item.product_id}&quantity=1`}
+                className="flex items-center justify-center gap-2 bg-green-600 text-white py-2 px-3 rounded-xl hover:bg-green-700 transition-colors duration-200"
+              >
+                <span className="text-sm font-medium">Buy Item</span>
+                <CreditCard className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
+
 
           {/* Message */}
           {messages[item.product_id] && (
@@ -290,7 +298,7 @@ function ProductList({ searchTerm, searchCategory, isDescending, sortBy, maxPric
 
   // Results found
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="flex flex-row items-center flex-wrap justify-between gap-5 h-auto rounded-xl m-10 p-2 border-2 border-neutral-300">
       {items.map((item) => renderProductCard(item))}
     </div>
   )

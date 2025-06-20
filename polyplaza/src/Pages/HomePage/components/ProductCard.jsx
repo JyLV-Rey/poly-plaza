@@ -82,6 +82,7 @@ function ProductCard({ product }) {
       <Link to={`/product/view?productId=${product.product_id}`} className="block">
         <div className="aspect-square overflow-hidden bg-gray-100">
           <img
+            style={{ imageRendering: "pixelated" }}
             src={product.product_image?.[0]?.image_url || "/placeholder.svg?height=300&width=300"}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

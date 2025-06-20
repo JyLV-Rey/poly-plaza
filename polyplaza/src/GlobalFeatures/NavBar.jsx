@@ -3,7 +3,7 @@
 import { Link } from "react-router-dom"
 import { useUser } from "../Pages/UserContext"
 import { useNavigate } from "react-router-dom"
-import { ShoppingCart, User, Home, Store, LogOut } from 'lucide-react'
+import { ShoppingCart, User, Home, Store, LogOut, ShoppingBag } from 'lucide-react'
 
 function NavBar() {
   const { userId, userFirstName, userLastName, userSellerId } = useUser()
@@ -22,8 +22,8 @@ function NavBar() {
 
   return (
     <div className="fixed z-50 w-full bg-white shadow-md border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+      <div className="pl-10 pr-10">
+        <div className="flex flex-row items-center justify-between h-20">
           <div className="flex items-center space-x-3">
             <Link to="/" className="flex items-center space-x-3">
               <img src="/logo.png" alt="PolyPlaza" className="h-12 w-auto" />
@@ -47,6 +47,14 @@ function NavBar() {
             >
               <ShoppingCart className="w-5 h-5 mr-2" />
               Cart
+            </Link>
+
+            <Link
+              to={`/orders?buyerId=${userId}`}
+              className="flex items-center px-4 py-3 rounded-full text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
+            >
+              <ShoppingBag className="w-5 h-5 mr-2" />
+              Orders
             </Link>
 
             <Link
