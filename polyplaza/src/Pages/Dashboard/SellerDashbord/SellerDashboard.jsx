@@ -33,6 +33,7 @@ function SellerDashboard() {
           buyer (
             first_name,
             phone,
+            is_deleted,
             last_name,
             email
           )
@@ -83,6 +84,8 @@ function SellerDashboard() {
   if (!userData) return null;
 
   if (userData?.is_deleted) return <div className="min-h-screen min-w-screen bg-gray-50 font-extrabold text-neutral-900 flex justify-center items-center text-6xl">Seller is Deleted</div>
+
+  if (userData?.buyer?.is_deleted) return <div className="min-h-screen min-w-screen bg-gray-50 font-extrabold text-neutral-900 flex justify-center items-center text-6xl">Buyer Associated with this Seller is Deleted</div>
 
   return (
     <>

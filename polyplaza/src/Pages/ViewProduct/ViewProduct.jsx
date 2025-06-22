@@ -37,13 +37,9 @@ function ViewProduct() {
         seller (
           seller_id,
           seller_name,
-<<<<<<< HEAD
           is_deleted,
           address (street, city, postal_code),
           buyer (buyer_id)
-=======
-          address (street, city, postal_code)
->>>>>>> 398aeb2e22fe9adb99b85e3015e85bd3d78ed4f4
         ),
         review (
           rating,
