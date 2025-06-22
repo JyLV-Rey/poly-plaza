@@ -153,7 +153,7 @@ async function fetchTrendingProducts() {
           {/* Greeting */}
           {userId && (
             <div className="flex flex-col items-center justify-center align-middle">
-              <div className=" flex flex-col items-center justify-center align-middle text-center mb-12 gap-2 p-10 bg-white rounded-xl w-fit self-center">
+              <div className=" flex flex-col items-center justify-center align-middle text-center mb-12 gap-2 p-10 rounded-xl w-fit self-center">
                 <img src="/logo.png" alt="" className="w-40 self-center"/>
                 <p className="text-4xl shiny-text font-extrabold text-amber-700">PolyPlaza</p>
                 <p className="text-2xl  font-extrabold text-red-400">Welcome Back {userFirstName}!</p>
