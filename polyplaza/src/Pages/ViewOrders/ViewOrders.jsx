@@ -47,7 +47,7 @@ function ViewOrders() {
           ) : orders.length === 0 ? (
             <div className="text-center py-16">
               <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-12 max-w-md mx-auto">
-                <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-6" />
+                <ShoppingBagIcon className="w-16 h-16 text-gray-300 mx-auto mb-6" />
                 <h3 className="text-2xl font-semibold text-gray-900 mb-4">No orders yet</h3>
                 <p className="text-gray-600 mb-8">
                   Looks like you haven't made any purchases. Start exploring and order your favorite items!
