@@ -17,6 +17,10 @@ import EditSeller from "./Pages/Account/EditAccount/EditSeller"
 import EditAddress from "./GlobalFeatures/EditAddress"
 import CreateProduct from "./Pages/Product/CreateProduct"
 import EditProduct from "./Pages/Product/EditProduct"
+import BuyersView from "./Pages/Dashboard/Admin/BuyersView/BuyersView"
+import SellersView from "./Pages/Dashboard/Admin/SellersView/SellersView"
+import OrdersView from "./Pages/Dashboard/Admin/OrdersView/OrdersView"
+import ApplicationsView from "./Pages/Dashboard/Admin/ApplicationView/ApplicationsView"
 
 function App() {
   return (
@@ -41,6 +45,10 @@ function App() {
           <Route path="/edit/buyer" element={<EditBuyer/>}/>
           <Route path="/edit/seller" element={<EditSeller/>}/>
           <Route path="/edit/address" element={<EditAddress/>}/>
+          <Route path="/dashboard/admin/buyer" element={<BuyersView />} />
+          <Route path="/dashboard/admin/seller" element={<SellersView />} />
+          <Route path="/dashboard/admin/order" element={<OrdersView />} />
+          <Route path="/dashboard/admin/application" element={<ApplicationsView />} />
         </Routes>
         <Footer />
       </div>

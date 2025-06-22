@@ -31,6 +31,7 @@ function SellerDashboard() {
           applied_at,
           buyer (
             first_name,
+            phone,
             last_name,
             email
           )
@@ -91,6 +92,7 @@ function SellerDashboard() {
                 Seller Name: <Link to={`/dashboard/buyer?buyerId=${userData?.buyer_id}`} className='hover:underline'>{userData?.buyer.first_name} {userData?.buyer.last_name}</Link>
               </h1>
               <h2 className='text-xl text-neutral-500 text-start font-bold'>Email: {userData?.buyer.email}</h2>
+              <h2 className='text-lg text-neutral-500 text-start font-medium'>Phone: {userData?.buyer.phone}</h2>
               <h2 className='text-lg text-neutral-500 text-start font-medium'>Date Joined: {new Date(userData?.applied_at).toLocaleString()}</h2>
               <h2 className='text-lg text-neutral-500 text-start font-medium'>Store ID: {sellerId}</h2>
             </div>

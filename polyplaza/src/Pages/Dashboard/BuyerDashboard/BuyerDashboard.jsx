@@ -67,6 +67,7 @@ function BuyerDashboard() {
               </div>
               <h2 className='text-xl text-neutral-600 text-start font-bold'>Email: {userData?.email}</h2>
               <h2 className='text-lg text-neutral-500 text-start font-medium'>Date Joined: {new Date(userData?.created_at).toLocaleString()}</h2>
+              <h2 className='text-lg text-neutral-500 text-start font-medium'>Phone Number: {userData?.phone}</h2>
               <h2 className='text-lg text-neutral-500 text-start font-medium'>Buyer ID: {buyerId}</h2>
             </div>
             <div className='flex flex-col gap-2'>

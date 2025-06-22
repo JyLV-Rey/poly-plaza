@@ -23,7 +23,7 @@ function SearchPage() {
             {/* Full Width Search Results */}
           </div>
         </div>
-        
+
       </div>
       <div className="w-full">
         <SearchItems />
