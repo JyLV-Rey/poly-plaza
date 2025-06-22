@@ -48,6 +48,12 @@ function EachOrder({ buyerId }) {
         return "bg-blue-100 text-blue-800";
     }
   }
+
+  if(orderData.length === 0) return <div className="w-full min-h-screen mt-40 justify-center items-center align-middle text-6xl text-center font-bold text-neutral-700">Account has no orders yet.</div>;
+  if(orderData[0]?.buyer?.is_deleted ) {
+    return <div className="w-full min-h-screen mt-40 justify-center items-center align-middle text-6xl text-center font-bold text-neutral-700">Cannot View Orders for Deleted Account</div>;
+  }
+
   return (
     <>
       <div className="flex flex-col flex-wrap flex-grow items-center w-full gap-5 justify-between">

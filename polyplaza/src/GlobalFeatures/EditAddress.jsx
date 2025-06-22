@@ -6,21 +6,25 @@ import { useEffect, useState } from "react";
 function EditAddress() {
   const [searchParams] = useSearchParams();
   const addressId = searchParams.get("addressId");
+  const navigate = useNavigate();
 
-  const [street, setStreet] = useState(null);
-  const [city, setCity] = useState(null);
-  const [postalCode, setPostalCode] = useState(null);
+  const [unitFloor, setUnitFloor] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [street, setStreet] = useState('');
+  const [barangay, setBarangay] = useState('');
+  const [province, setProvince] = useState('');
+  const [city, setCity] = useState('');
+  const [region, setRegion] = useState('');
 
   const [errorMessage, setErrorMessage] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (!addressId) return;
 
-    const fetchAddress = async () => {
+    (async () => {
       const { data, error } = await supabase
         .from("address")
-        .select("address_id, street, city, postal_code")
+        .select("unit_floor, postal_code, street, barangay, province, city, region")
         .eq("address_id", addressId)
         .single();
 
@@ -29,25 +33,33 @@ function EditAddress() {
         return;
       }
 
-      setStreet(data.street);
-      setCity(data.city);
-      setPostalCode(data.postal_code);
-    };
-
-    fetchAddress();
+      setUnitFloor(data.unit_floor || '');
+      setPostalCode(data.postal_code || '');
+      setStreet(data.street || '');
+      setBarangay(data.barangay || '');
+      setProvince(data.province || '');
+      setCity(data.city || '');
+      setRegion(data.region || '');
+    })();
   }, [addressId]);
 
   async function handleUpdate() {
-    if (!street || !city) {
-      setErrorMessage("Please fill in all fields.");
+    if (!street || !city || !region) {
+      setErrorMessage("Please fill in all required fields.");
       return;
     }
 
-    const p_code = postalCode ? postalCode : null;
-
     const { error } = await supabase
       .from("address")
-      .update({ street, city, postal_code: p_code })
+      .update({
+        unit_floor: unitFloor || null,
+        postal_code: postalCode || null,
+        street,
+        barangay: barangay || null,
+        province: province || null,
+        city,
+        region,
+      })
       .eq("address_id", addressId);
 
     if (error) {
@@ -91,7 +103,7 @@ function EditAddress() {
         <div className="flex flex-col items-center gap-2 justify-around mt-20 p-8 bg-white/90 rounded-xl shadow-2xl backdrop-blur-md w-fit">
           <img src="/logo.png" alt="logo" className="w-32 h-32 " />
           <h1 className="text-4xl shiny-text font-extrabold text-emerald-700">PolyPlaza</h1>
-          <p className="text-neutral-600">Edit your buyer account</p>
+          <p className="text-neutral-600">Edit your address</p>
 
           {errorMessage && (
             <div className="border-2 p-2 border-red-400 bg-red-100 rounded-xl">
@@ -101,12 +113,15 @@ function EditAddress() {
 
           <div className="flex flex-row gap-10 items-center p-5 border-2 border-emerald-200 rounded-2xl">
             <div className="flex flex-col gap-2 w-auto">
-              <p className="text-left text-emerald-500 text-2xl font-bold">
-                Update Your Address:
-              </p>
+              <p className="text-left text-emerald-500 text-2xl font-bold">Update Your Address:</p>
+
+              <TextField data={unitFloor} color="emerald-400" header="Unit/Floor (optional)" setFunction={setUnitFloor} />
+              <TextField data={postalCode} color="emerald-400" header="Postal Code (optional)" setFunction={setPostalCode} />
               <TextField data={street} color="emerald-400" header="Street" setFunction={setStreet} isRequired />
+              <TextField data={barangay} color="emerald-400" header="Barangay (optional)" setFunction={setBarangay} />
+              <TextField data={province} color="emerald-400" header="Province (optional)" setFunction={setProvince} />
               <TextField data={city} color="emerald-400" header="City" setFunction={setCity} isRequired />
-              <TextField data={postalCode} color="emerald-400" header="Postal Code" setFunction={setPostalCode} />
+              <TextField data={region} color="emerald-400" header="Region" setFunction={setRegion} isRequired />
             </div>
           </div>
 

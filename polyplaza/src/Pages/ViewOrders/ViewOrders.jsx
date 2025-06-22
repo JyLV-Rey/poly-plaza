@@ -7,6 +7,8 @@ function ViewOrders(){
   const [searchParams] = useSearchParams();
   const buyerId = searchParams.get('buyerId');
 
+  
+
   return(
     <>
       

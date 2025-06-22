@@ -8,10 +8,14 @@ export default function AddressCard({ address }) {
         <h2 className="text-2xl font-bold text-gray-900">Delivery Address</h2>
       </div>
       {address ? (
-        <div className="space-y-2">
-          <p className="text-gray-900">{address.street}</p>
-          <p className="text-gray-900">{address.city}</p>
-          {address.postal_code && <p className="text-gray-900">{address.postal_code}</p>}
+        <div className="space-y-1 text-gray-900">
+          {address.unit_floor && <p>{address.unit_floor}</p>}
+          {address.postal_code && <p>{address.postal_code}</p>}
+          <p>{address.street}</p>
+          {address.barangay && <p>{address.barangay}</p>}
+          {address.province && <p>{address.province}</p>}
+          <p>{address.city}</p>
+          <p>{address.region}</p>
         </div>
       ) : (
         <p className="text-gray-600">Address information not available</p>

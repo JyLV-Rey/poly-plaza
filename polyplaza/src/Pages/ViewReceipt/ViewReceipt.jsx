@@ -36,58 +36,68 @@ function ViewReceipt() {
 
   async function fetchOrderData() {
     try {
-      const { data: orderInfo } = await supabase
-        .from("order")
-        .select(`
-          order_id,
-          status,
-          ordered_at,
-          buyer (
-            first_name,
-            last_name,
-            email
-          ),
-          order_item (
-            quantity,
-            product (
-              product_id,
-              name,
-              price,
-              description,
-              product_image (
-                image_url
-              ),
-              seller (
-                seller_name,
-                address (
-                  street,
-                  city,
-                  postal_code
-                )
+    const { data: orderInfo } = await supabase
+      .from("order")
+      .select(`
+        order_id,
+        is_deleted,
+        status,
+        ordered_at,
+        buyer (
+          first_name,
+          last_name,
+          email
+        ),
+        order_item (
+          quantity,
+          product (
+            product_id,
+            name,
+            price,
+            description,
+            product_image (
+              image_url
+            ),
+            seller (
+              seller_name,
+              address (
+                unit_floor,
+                postal_code,
+                street,
+                barangay,
+                province,
+                city,
+                region
               )
             )
           )
-        `)
-        .eq("order_id", orderId)
-        .single()
+        )
+      `)
+      .eq("order_id", orderId)
+      .single()
 
-      const { data: deliveryInfo } = await supabase
-        .from("delivery")
-        .select(`
-          delivery_id,
-          delivery_status,
-          courier_service,
-          tracking_number,
-          delivery_date,
-          buyer_address_id,
-          address (
-            street,
-            city,
-            postal_code
-          )
-        `)
-        .eq("order_id", orderId)
-        .single()
+    // deliveryInfo (delivery address)
+    const { data: deliveryInfo } = await supabase
+      .from("delivery")
+      .select(`
+        delivery_id,
+        delivery_status,
+        courier_service,
+        tracking_number,
+        delivery_date,
+        buyer_address_id,
+        address (
+          unit_floor,
+          postal_code,
+          street,
+          barangay,
+          province,
+          city,
+          region
+        )
+      `)
+      .eq("order_id", orderId)
+      .single()
 
       const { data: paymentInfo } = await supabase
         .from("payment")
@@ -266,6 +276,13 @@ function ViewReceipt() {
   }
 
   const seller = orderData.order_item[0]?.product.seller
+
+
+  if (orderData.is_deleted) {
+    return (
+        <div className="min-h-screen min-w-screen text-neutral-700 font-bold justify-center items-center text-6xl flex flex-col pt-20">Order has Been Deleted.</div>
+    )
+  }
 
   return (
     <CheckCredentials>

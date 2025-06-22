@@ -19,6 +19,10 @@ async function getOrder(buyerId, filters = {}) {
       ordered_at,
       status,
 
+      buyer (
+        is_deleted
+      ),
+
       refund(
         refund_status,
         refund_reason,

@@ -3,7 +3,7 @@
 import { Link } from "react-router-dom"
 import { useUser } from "../Pages/UserContext"
 import { useNavigate } from "react-router-dom"
-import { ShoppingCart, User, Home, Store, LogOut, ShoppingBag, Lock } from 'lucide-react'
+import { ShoppingCart, User, Home, Store, LogOut, ShoppingBag, Lock, StoreIcon } from 'lucide-react'
 
 function NavBar() {
   const { userId, userFirstName, userLastName, userSellerId } = useUser()
@@ -84,6 +84,17 @@ function NavBar() {
                 >
                   <Lock className="w-5 h-5 mr-2" />
                   Admin Dashboard
+                </Link>
+              )
+            }
+            {
+              userSellerId == null && (
+                <Link
+                  to={`/account/create/seller?buyerId=${userId}`}
+                  className="flex items-center px-4 py-3 rounded-full text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
+                >
+                  <StoreIcon className="w-5 h-5 mr-2" />
+                  Become a Seller
                 </Link>
               )
             }
