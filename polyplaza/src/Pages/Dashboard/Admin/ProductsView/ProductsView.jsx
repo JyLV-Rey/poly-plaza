@@ -42,7 +42,7 @@ function ProductsView() {
       const { data, error } = await query
       if (!error) setProducts(data)
     }
- 
+
     fetchProducts()
   }, [location.search])
 

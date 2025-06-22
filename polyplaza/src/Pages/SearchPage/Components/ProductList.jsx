@@ -102,25 +102,39 @@ function ProductList({ searchTerm, searchCategory, isDescending, sortBy, maxPric
     setLoading(false)
   }
 
-  async function fetchExploreProducts() {
-    const { data } = await supabase
-      .from("product")
-      .select(`
-        product_id,
-        name,
-        category,
-        price,
-        product_image (image_url),
-        seller (seller_name),
-        review (rating),
-        order_item (quantity)
-      `)
-      .limit(12)
+ async function fetchExploreProducts() {
+  const { data, error } = await supabase
+    .from("product")
+    .select(`
+      product_id,
+      name,
+      category,
+      price,
+      is_deleted,
+      product_image (image_url),
+      seller (
+        seller_name,
+        is_deleted
+      ),
+      review (rating),
+      order_item (quantity)
+    `)
+    .limit(12);
 
-    if (data) {
-      setExploreProducts(data)
-    }
+  if (error) {
+    console.error("Error fetching explore products:", error);
+    return;
   }
+
+  if (data) {
+    // Filter out deleted products or sellers
+    const filtered = data.filter(
+      (product) => !product.is_deleted && !product.seller?.is_deleted
+    );
+    setExploreProducts(filtered);
+  }
+}
+
 
   function getAverageRating(reviews) {
     const ratings = reviews?.map((r) => r.rating) || []

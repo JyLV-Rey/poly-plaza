@@ -41,31 +41,42 @@ function HomePage() {
     setCategories(data)
   }
 
-  async function fetchTrendingProducts() {
-    const { data } = await supabase
-      .from("product")
-      .select(`
-        product_id,
-        name,
-        price,
-        category,
-        product_image (image_url),
-        seller (seller_name),
-        review (rating),
-        order_item (quantity)
-      `)
-      .limit(8)
+async function fetchTrendingProducts() {
+  const { data } = await supabase
+    .from("product")
+    .select(`
+      product_id,
+      name,
+      price,
+      category,
+      is_deleted,
+      product_image (image_url),
+      seller (
+        seller_name,
+        is_deleted
+      ),
+      review (rating),
+      order_item (quantity)
+    `)
+    .limit(8);
 
-    if (data) {
-      // Sort by total orders (trending)
-      const sorted = data.sort((a, b) => {
-        const ordersA = a.order_item?.reduce((sum, item) => sum + item.quantity, 0) || 0
-        const ordersB = b.order_item?.reduce((sum, item) => sum + item.quantity, 0) || 0
-        return ordersB - ordersA
-      })
-      setTrendingProducts(sorted.slice(0, 4))
-    }
+  if (data) {
+    // Filter out deleted products or sellers
+    const filtered = data.filter(
+      (product) => !product.is_deleted && !product.seller?.is_deleted
+    );
+
+    // Sort by order quantity (trending)
+    const sorted = filtered.sort((a, b) => {
+      const ordersA = a.order_item?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+      const ordersB = b.order_item?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+      return ordersB - ordersA;
+    });
+
+    setTrendingProducts(sorted.slice(0, 4));
   }
+}
+
 
   async function fetchFeaturedProducts() {
     const { data } = await supabase
@@ -75,17 +86,27 @@ function HomePage() {
         name,
         price,
         category,
+        is_deleted,
         product_image (image_url),
-        seller (seller_name),
+        seller (
+          seller_name,
+          is_deleted
+        ),
         review (rating),
         order_item (quantity)
       `)
-      .limit(12)
+      .limit(12);
 
     if (data) {
-      setFeaturedProducts(data)
+      // Filter out deleted products or sellers
+      const filtered = data.filter(
+        (product) => !product.is_deleted && !product.seller?.is_deleted
+      );
+
+      setFeaturedProducts(filtered);
     }
   }
+
 
   function handleSearch(e) {
     e.preventDefault()
