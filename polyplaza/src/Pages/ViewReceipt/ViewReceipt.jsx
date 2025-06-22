@@ -27,6 +27,9 @@ function ViewReceipt() {
   const [paymentData, setPaymentData] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  const [refundData, setRefundData] = useState(null);
+const [cancelData, setCancelData] = useState(null);
+
   const canRefund = deliveryData?.delivery_status === "Delivered"
   const canCancel = deliveryData?.delivery_status === "Preparing"
 
@@ -109,6 +112,23 @@ function ViewReceipt() {
         `)
         .eq("order_id", orderId)
         .single()
+// Refund info
+      const { data: refundInfo } = await supabase
+        .from("refund")
+        .select("refund_reason, processed_at, refund_status")
+        .eq("order_id", orderId)
+        .single();
+
+      setRefundData(refundInfo);
+
+      // Cancel info
+      const { data: cancelInfo } = await supabase
+        .from("cancel")
+        .select("cancel_reason, cancel_date")
+        .eq("order_id", orderId)
+        .single();
+
+      setCancelData(cancelInfo);
 
       console.log(deliveryInfo.delivery_status)
       console.log(canRefund)
@@ -304,6 +324,28 @@ function ViewReceipt() {
           )}
           <SellerAddressCard seller={seller} />
           {paymentData ? <PaymentInfoCard payment={paymentData} /> : <ProcessingPaymentNotice />}
+
+          {(refundData || cancelData) && (
+            <div className="border-2 border-dashed border-red-500 rounded-xl p-4 bg-red-50 text-red-800 font-semibold shadow-md">
+              <h2 className="text-xl font-bold mb-2">
+                {refundData ? "Refund Information" : "Cancellation Information"}
+              </h2>
+              {refundData && (
+                <div className="space-y-1">
+                  <p><span className="font-bold">Reason:</span> {refundData.refund_reason}</p>
+                  <p><span className="font-bold">Processed At:</span> {new Date(refundData.processed_at).toLocaleString()}</p>
+                  <p><span className="font-bold">Status:</span> {refundData.refund_status}</p>
+                </div>
+              )}
+              {cancelData && (
+                <div className="space-y-1">
+                  <p><span className="font-bold">Reason:</span> {cancelData.cancel_reason}</p>
+                  <p><span className="font-bold">Cancelled At:</span> {new Date(cancelData.cancel_date).toLocaleString()}</p>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="flex justify-end space-x-4">
             <button
               disabled={!canCancel}

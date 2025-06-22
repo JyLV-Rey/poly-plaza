@@ -36,7 +36,7 @@ function ConfirmOrderPage() {
   ]
 
   const paymentOptions = [
-    { id: "UPI", name: "UPI", icon: "💳" },
+    { id: "COD", name: "COD", icon: "👛" },
     { id: "Card", name: "Credit/Debit Card", icon: "💳" },
     { id: "Wallet", name: "Digital Wallet", icon: "📱" },
   ]

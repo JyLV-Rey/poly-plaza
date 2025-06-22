@@ -38,3 +38,51 @@ export async function getTotalOrdersPlaced(buyerId) {
 
   return count;
 }
+
+// Get total number of cancelled orders
+export async function getTotalCancelledOrders(buyerId) {
+  const { count, error } = await supabase
+    .from("order")
+    .select("*", { count: "exact", head: true })
+    .eq("buyer_id", buyerId)
+    .eq("status", "Cancelled");
+
+  if (error) {
+    console.error("Error fetching cancelled orders:", error);
+    return 0;
+  }
+
+  return count;
+}
+
+// Get total number of refund requests
+export async function getTotalRefunds(buyerId) {
+  const { count, error } = await supabase
+    .from("refund")
+    .select("*", { count: "exact", head: true })
+    .eq("buyer_id", buyerId); // assuming refund has buyer_id
+
+  // if refund doesn't have buyer_id, join through `order` table instead
+  if (error || count === null) {
+    // fallback: join order + refund if no buyer_id in refund table
+    const { data, error: joinError } = await supabase
+      .from("refund")
+      .select("order_id")
+      .eq("refund_status", "Pending"); // or remove filter
+
+    if (joinError || !data) return 0;
+
+    const orderIds = data.map(r => r.order_id);
+
+    const { data: matchingOrders, error: orderError } = await supabase
+      .from("order")
+      .select("order_id")
+      .in("order_id", orderIds)
+      .eq("buyer_id", buyerId);
+
+    if (orderError || !matchingOrders) return 0;
+    return matchingOrders.length;
+  }
+
+  return count;
+}

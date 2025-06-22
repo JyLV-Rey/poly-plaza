@@ -12,8 +12,21 @@ import SellerTopBuyersBar from './components/SellerTopBuyersBar';
 import PieChartBox from '../PieChartBox';
 import SellerTopExpensiveProductsBar from './components/SellerTopExpensiveProductsBar';
 import SellerLeastExpensiveProductsBar from './components/SellerLeastExpensiveProductsBar';
+import {
+  getTotalCancelledBySeller,
+  getTotalRefundedBySeller,
+  getAverageStoreRating
+} from './components/sellerAggregate';
+import SellerRevenueRankingChart from './components/SellerRevenueRankingChart';
+import SellerSoldRankingChart from './components/SellerSoldRankingChart';
+import SellerPurchaseFrequencyBar from './components/SellerPurchaseFrequencyBar';
 
 function SellerDashboard() {
+
+  const [cancelledCount, setCancelledCount] = useState(0);
+const [refundedCount, setRefundedCount] = useState(0);
+const [avgStoreRating, setAvgStoreRating] = useState(0);
+
   const [searchParams] = useSearchParams();
   const sellerId = searchParams.get('sellerId');
 
@@ -75,9 +88,21 @@ function SellerDashboard() {
         0
       );
 
+    
       setTotals({ totalSold, totalEarned });
     }
+    async function loadAggregates() {
+      const [cancel, refund, avg] = await Promise.all([
+        getTotalCancelledBySeller(sellerId),
+        getTotalRefundedBySeller(sellerId),
+        getAverageStoreRating(sellerId)
+      ]);
 
+      setCancelledCount(cancel);
+      setRefundedCount(refund);
+      setAvgStoreRating(avg);
+    }
+  loadAggregates();
     fetchAndSetUserData();
   }, [sellerId]);
 
@@ -103,9 +128,22 @@ function SellerDashboard() {
               <h2 className='text-lg text-neutral-500 text-start font-medium'>Date Joined: {new Date(userData?.applied_at).toLocaleString()}</h2>
               <h2 className='text-lg text-neutral-500 text-start font-medium'>Store ID: {sellerId}</h2>
             </div>
-            <div className='flex flex-col gap-2'>
+            <div className='flex flex-col gap-2 text-neutral-500 text-end font-bold'>
               <h1 className='text-4xl text-neutral-700 text-end font-extrabold'>Total Earned: ₱{totals.totalEarned.toLocaleString()}</h1>
               <h2 className='text-xl text-neutral-500 text-end font-bold'>Total Sold: {totals.totalSold.toLocaleString()}</h2>
+              <h2 className='text-lg'>
+                Cancelled Orders: {cancelledCount}
+              </h2>
+              <h2 className='text-lg'>
+                Refunded Orders: {refundedCount}
+              </h2>
+
+
+              <span className='text-lg font-semibold'>Avg Store Rating: {avgStoreRating.toFixed(1)}</span>
+              <span className='text-lg text-yellow-400'>
+                {'⭐'.repeat(Math.round(avgStoreRating)) + '☆'.repeat(5 - Math.round(avgStoreRating))}
+              </span>
+
               <div className='flex flex-row gap-2 align-middle justify-end'>
                 <Link to={`/product/create?sellerId=${sellerId}`} className='bg-blue-500 hover:bg-blue-100 duration-200 ease-(--my-beizer) transform hover:scale-105 hover:text-blue-500 hover:font-extrabold hover:border-2 border-blue-500 text-white font-bold py-2 px-4 rounded w-fit self-end mt-3'>Create Product</Link>
                 <Link to={`/search?&searchStore=${userData.seller_name}`} className='bg-pink-500 hover:bg-pink-100 duration-200 ease-(--my-beizer) transform hover:scale-105 hover:text-pink-500 hover:font-extrabold hover:border-2 border-pink-500 text-white font-bold py-2 px-4 rounded w-fit self-end mt-3'>View Products</Link>
@@ -124,8 +162,20 @@ function SellerDashboard() {
             <SellerTopCategoriesBar sellerId={sellerId} />
           </ChartBox>
 
-          <ChartBox title="Monthly Earnings">
+          <ChartBox title="Monthly Purchase Revenue">
             <SellerMonthlyEarningsLineChart sellerId={sellerId} />
+          </ChartBox>
+
+          <ChartBox title="Monthly Purchase Frequency">
+            <SellerPurchaseFrequencyBar sellerId={sellerId} />
+          </ChartBox>
+
+          <ChartBox title="Top Sellers by Revenue">
+            <SellerRevenueRankingChart highlightSellerId={sellerId} />
+          </ChartBox>
+
+          <ChartBox title="Top Sellers by Products Sold">
+            <SellerSoldRankingChart highlightSellerId={sellerId} />
           </ChartBox>
 
           <ChartBox title="Top Reviewed Products">

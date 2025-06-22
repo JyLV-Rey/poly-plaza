@@ -1,4 +1,3 @@
-// SellerTopBuyersBar.jsx
 import { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { supabase } from '../../../../supabase';
@@ -21,24 +20,40 @@ export default function SellerTopBuyersBar({ sellerId }) {
     async function fetchData() {
       const { data, error } = await supabase
         .from('order_item')
-        .select(`order(order_id, buyer_id), product:product_id(seller_id)`)
+        .select(`
+          order:order_id (
+            order_id,
+            buyer_id,
+            buyer (
+              buyer_id,
+              last_name
+            )
+          ),
+          product:product_id (
+            seller_id
+          )
+        `)
         .limit(1000);
 
       if (error) return console.error(error);
 
       const buyerOrderCount = {};
+
       for (const row of data) {
-        if (String(row.product?.seller_id) !== String(sellerId)) continue;
-        const buyer = row.order?.buyer_id;
-        if (!buyer) continue;
-        buyerOrderCount[buyer] = (buyerOrderCount[buyer] || 0) + 1;
+        const sellerMatch = String(row.product?.seller_id) === String(sellerId);
+        const buyer = row.order?.buyer;
+
+        if (!sellerMatch || !buyer?.buyer_id || !buyer?.last_name) continue;
+
+        const key = `${buyer.buyer_id}:${buyer.last_name}`;
+        buyerOrderCount[key] = (buyerOrderCount[key] || 0) + 1;
       }
 
       const sorted = Object.entries(buyerOrderCount)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 10);
 
-      const labels = sorted.map(([buyerId]) => `Buyer ${buyerId}`);
+      const labels = sorted.map(([key]) => `Buyer ${key.split(":")[1]}`);
       const values = sorted.map(([_, count]) => count);
 
       setChartData({

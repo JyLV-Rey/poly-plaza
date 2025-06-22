@@ -1,7 +1,7 @@
 import { Link, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from '../../../supabase';
-import { getTotalSpent, getTotalOrdersPlaced } from './components/userAggregate';
+import { getTotalSpent, getTotalOrdersPlaced, getTotalCancelledOrders, getTotalRefunds } from './components/userAggregate';
 import CheckCredentials from '../../CheckCredentials';
 import BuyerTopCategoryDoughnut from './components/BuyerTopCategoryDoughnut';
 import BuyerSpendLineChart from './components/BuyerSpendLineChart';
@@ -20,6 +20,8 @@ function BuyerDashboard() {
   const [searchParams] = useSearchParams();
   const buyerId = searchParams.get('buyerId');
 
+  const [totalCancelled, setTotalCancelled] = useState(0);
+  const [totalRefunds, setTotalRefunds] = useState(0);
   const [userData, setUserData] = useState(null);
   const [totalSpent, setTotalSpent] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
@@ -43,11 +45,13 @@ function BuyerDashboard() {
     async function load() {
       const spent = await getTotalSpent(buyerId);
       const orders = await getTotalOrdersPlaced(buyerId);
-      console.log('Total spent ₱', spent);
-      console.log('Total orders', orders);
+      const cancelled = await getTotalCancelledOrders(buyerId);
+      const refunds = await getTotalRefunds(buyerId);
 
       setTotalOrders(orders);
       setTotalSpent(spent);
+      setTotalCancelled(cancelled);
+      setTotalRefunds(refunds);
     }
     load();
     }
@@ -71,10 +75,13 @@ function BuyerDashboard() {
               <h2 className='text-lg text-neutral-500 text-start font-medium'>Date Joined: {new Date(userData?.created_at).toLocaleString()}</h2>
               <h2 className='text-lg text-neutral-500 text-start font-medium'>Phone Number: {userData?.phone}</h2>
               <h2 className='text-lg text-neutral-500 text-start font-medium'>Buyer ID: {buyerId}</h2>
+
             </div>
             <div className='flex flex-col gap-2'>
               <h1 className='text-4xl text-neutral-700 text-end font-extrabold'>Total Spent: ₱{totalSpent.toLocaleString()}</h1>
               <h2 className='text-xl text-neutral-500 text-end font-bold'>Total Orders: {totalOrders.toLocaleString()}</h2>
+              <h2 className='text-lg text-neutral-500 font-medium text-end'>Cancelled Orders: {totalCancelled}</h2>
+              <h2 className='text-lg text-neutral-500 font-medium text-end'>Refunds: {totalRefunds}</h2>
               <div className='flex flex-row gap-2 self-end'>
                 <Link to={`/orders?buyerId=${buyerId}`} className='bg-pink-500 hover:bg-pink-100 duration-200 ease-(--my-beizer) transform hover:scale-105 hover:text-pink-500 hover:font-extrabold hover:border-2 border-pink-500 text-white font-bold py-2 px-4 rounded w-fit self-end mt-3'>View Orders</Link>
                 <Link to={`/edit/buyer?buyerId=${buyerId}`} className='bg-emerald-500 hover:bg-emerald-100 duration-200 ease-(--my-beizer) transform hover:scale-105 hover:text-emerald-500 hover:font-extrabold hover:border-2 border-emerald-500 text-white font-bold py-2 px-4 rounded w-fit self-end mt-3'>Edit Profile</Link>

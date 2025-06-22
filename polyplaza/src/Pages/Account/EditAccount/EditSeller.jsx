@@ -41,7 +41,7 @@ function EditSeller() {
   }, [buyerId]);
 
   const handleUpdate = async () => {
-    
+
 
     setErrorMessage("");
     setSuccessMessage("");
