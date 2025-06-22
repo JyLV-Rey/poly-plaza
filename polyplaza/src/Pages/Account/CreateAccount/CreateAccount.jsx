@@ -14,20 +14,13 @@ function CreateAccountBuyer() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [unitFloor, setUnitFloor] = useState("");
-  const [postalCode, setPostalCode] = useState("");
-  const [street, setStreet] = useState("");
-  const [barangay, setBarangay] = useState("");
-  const [province, setProvince] = useState("");
-  const [city, setCity] = useState("");
-  const [region, setRegion] = useState("");
 
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleRegister = async () => {
     setErrorMessage("");
 
-    const requiredFields = [firstName, lastName, email, phone, password, confirmPassword, street, city, region];
+    const requiredFields = [firstName, lastName, email, phone, password, confirmPassword];
     if (requiredFields.some(field => !field)) {
       setErrorMessage("Please fill in all required fields.");
       return;
@@ -38,7 +31,7 @@ function CreateAccountBuyer() {
       return;
     }
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("buyer")
       .insert({
         first_name: firstName,
@@ -55,21 +48,6 @@ function CreateAccountBuyer() {
       return;
     }
 
-    const { error: addressError } = await supabase.from("address").insert({
-      buyer_id: data.buyer_id,
-      unit_floor: unitFloor || null,
-      postal_code: postalCode || null,
-      street,
-      barangay: barangay || null,
-      province: province || null,
-      city,
-      region,
-    });
-
-    if (addressError) {
-      setErrorMessage("Failed to create address.");
-      return;
-    }
 
     navigate("/account/login?accountCreated=true");
   };
@@ -109,18 +87,6 @@ function CreateAccountBuyer() {
             </div>
 
             {/* Address Info */}
-            <div className="flex flex-col gap-2">
-              <p className="text-left text-neutral-500 text-2xl font-bold">
-                Enter Your First Address:
-              </p>
-              <TextField data={unitFloor} color="neutral-500" header="Unit/Floor" setFunction={setUnitFloor} />
-              <TextField data={postalCode} color="neutral-500" header="Postal Code" setFunction={setPostalCode} />
-              <TextField data={street} color="neutral-500" header="Street" setFunction={setStreet} isRequired />
-              <TextField data={barangay} color="neutral-500" header="Barangay" setFunction={setBarangay} isRequired />
-              <TextField data={province} color="neutral-500" header="Province" setFunction={setProvince} isRequired />
-              <TextField data={city} color="neutral-500" header="City" setFunction={setCity} isRequired />
-              <TextField data={region} color="neutral-500" header="Region" setFunction={setRegion} isRequired />
-            </div>
           </div>
 
           <button

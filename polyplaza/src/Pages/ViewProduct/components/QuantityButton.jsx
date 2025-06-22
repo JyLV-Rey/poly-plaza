@@ -35,7 +35,6 @@ function QuantityButton({ quantity, setQuantity, min = 1, max = 100, availableSt
           +
         </button>
       </div>
-      {availableStock && <p className="text-sm text-gray-600 mt-2 text-center">{availableStock} items available</p>}
     </>
   )
 }

@@ -145,82 +145,98 @@ function ConfirmOrderPage() {
 
 
 
-  async function confirmOrder() {
-    if (!selectedAddressIndex && selectedAddressIndex !== 0) {
-      alert("Please select a delivery address")
-      return
-    }
-    if (!paymentMethod) {
-      alert("Please select a payment method")
-      return
-    }
-    if (!courierService) {
-      alert("Please select a courier service")
-      return
-    }
-
-    setLoading(true)
-    try {
-      const { data: order, error: orderError } = await supabase
-        .from("order")
-        .insert({
-          buyer_id: userId,
-          status: "Pending",
-        })
-        .select("order_id")
-        .single()
-
-      if (orderError) throw orderError
-
-      const orderItemsData = orderItems.map((item) => ({
-        order_id: order.order_id,
-        product_id: item.product.product_id,
-        quantity: item.quantity,
-      }))
-
-      const { error: orderItemError } = await supabase.from("order_item").insert(orderItemsData)
-      if (orderItemError) throw orderItemError
-
-      // Decrease product quantity using RPC call
-      for (const item of orderItems) {
-        const { error: quantityError } = await supabase.rpc("decrease_quantity", {
-          pid: item.product.product_id,
-          qty: item.quantity,
-        })
-
-        if (quantityError) throw quantityError
-      }
-
-
-
-      const { error: paymentError } = await supabase.from("payment").insert({
-        order_id: order.order_id,
-        payment_method: paymentMethod,
-        payment_status: "Success",
-      })
-      if (paymentError) throw paymentError
-
-      const { error: deliveryError } = await supabase.from("delivery").insert({
-        order_id: order.order_id,
-        delivery_status: "Preparing",
-        courier_service: courierService,
-        buyer_address_id: selectedAddressIndex,
-      })
-      if (deliveryError) throw deliveryError
-
-      if (cartItemIds) {
-        const cartItemIdArray = cartItemIds.split(",").map((id) => Number(id))
-        await supabase.from("cartitem").delete().in("cart_item_id", cartItemIdArray)
-      }
-
-      navigate(`/product/view_receipt?orderId=${order.order_id}&justOrdered=true`)
-    } catch (error) {
-      console.error("Error creating order:", error)
-      alert(`Error creating order: ${error.message}. Please try again.`)
-    } finally {
-      setLoading(false)
-    }
+async function confirmOrder() {
+  if (!selectedAddressIndex && selectedAddressIndex !== 0) {
+    alert("Please select a delivery address")
+    return
   }
+  if (!paymentMethod) {
+    alert("Please select a payment method")
+    return
+  }
+  if (!courierService) {
+    alert("Please select a courier service")
+    return
+  }
+
+  setLoading(true)
+  try {
+    const { data: order, error: orderError } = await supabase
+      .from("order")
+      .insert({
+        buyer_id: userId,
+        status: "Pending",
+      })
+      .select("order_id")
+      .single()
+
+    if (orderError) throw orderError
+
+    const orderItemsData = orderItems.map((item) => ({
+      order_id: order.order_id,
+      product_id: item.product.product_id,
+      quantity: item.quantity,
+    }))
+
+    const { error: orderItemError } = await supabase.from("order_item").insert(orderItemsData)
+    if (orderItemError) throw orderItemError
+
+    for (const item of orderItems) {
+      const { error: quantityError } = await supabase.rpc("decrease_quantity", {
+        pid: item.product.product_id,
+        qty: item.quantity,
+      })
+      if (quantityError) throw quantityError
+    }
+
+    // ✨ Set payment status based on method
+const payment_status = paymentMethod === "COD" ? "Pending" : "Success"
+
+  // Insert payment record
+  const { data: paymentData, error: paymentError } = await supabase
+    .from("payment")
+    .insert({
+      order_id: order.order_id,
+      payment_method: paymentMethod,
+      payment_status,
+    })
+    .select("payment_id")
+    .single()
+
+  if (paymentError) throw paymentError
+
+  // If pending, nullify the paid_at timestamp
+    if (payment_status === "Pending") {
+      const { error: nullifyError } = await supabase
+        .from("payment")
+        .update({ paid_at: null })
+        .eq("payment_id", paymentData.payment_id)
+
+      if (nullifyError) throw nullifyError
+    }
+
+    const { error: deliveryError } = await supabase.from("delivery").insert({
+      order_id: order.order_id,
+      delivery_status: "Preparing",
+      courier_service: courierService,
+      buyer_address_id: selectedAddressIndex,
+    })
+    if (deliveryError) throw deliveryError
+
+    if (cartItemIds) {
+      const cartItemIdArray = cartItemIds.split(",").map((id) => Number(id))
+      await supabase.from("cartitem").delete().in("cart_item_id", cartItemIdArray)
+    }
+
+    navigate(`/product/view_receipt?orderId=${order.order_id}&justOrdered=true`)
+  } catch (error) {
+    console.error("Error creating order:", error)
+    alert(`Error creating order: ${error.message}. Please try again.`)
+  } finally {
+    setLoading(false)
+  }
+}
+
 
   if (loading) {
     return (
