@@ -6,6 +6,7 @@ import { Search, SlidersHorizontal } from "lucide-react"
 import { getCategories } from "./query"
 
 function SearchBar() {
+  const [searchStore, setSearchStore] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [searchCategory, setSearchCategory] = useState("")
   const [sortBy, setSortBy] = useState("reviews")
@@ -30,13 +31,15 @@ function SearchBar() {
     setSortBy(urlParams.get("sortBy") || "reviews")
     setIsDescending(urlParams.get("isDescending") || "Descending")
     setMaxPrice(urlParams.get("maxPrice") || "")
+    setSearchStore(urlParams.get("searchStore") || "")
   }, [location.search])
 
   function handleSearch(e) {
     e.preventDefault()
     navigate(
-      `/search?searchTerm=${searchTerm}&searchCategory=${searchCategory}&isDescending=${isDescending}&maxPrice=${maxPrice}&sortBy=${sortBy}`,
-    )
+      `/search?searchTerm=${searchTerm}&searchCategory=${searchCategory}&isDescending=${isDescending}&maxPrice=${maxPrice}&sortBy=${sortBy}&searchStore=${searchStore}`
+    );
+
   }
 
   return (
@@ -104,7 +107,6 @@ function SearchBar() {
                   <option value="orders">Orders</option>
                 </select>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Order</label>
                 <select
@@ -124,6 +126,16 @@ function SearchBar() {
                   placeholder="Enter max price"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Search Store</label>
+                <input
+                  type="text"
+                  placeholder="Search for stores..."
+                  value={searchStore}
+                  onChange={(e) => setSearchStore(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                 />
               </div>

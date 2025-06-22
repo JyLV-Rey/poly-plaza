@@ -10,6 +10,8 @@ import SellerTopReviewedProductsBar from './components/SellerTopReviewedProducts
 import SellerEarningsByCategoryDoughnut from './components/SellerEarningsByCategoryDoughnut';
 import SellerTopBuyersBar from './components/SellerTopBuyersBar';
 import PieChartBox from '../PieChartBox';
+import SellerTopExpensiveProductsBar from './components/SellerTopExpensiveProductsBar';
+import SellerLeastExpensiveProductsBar from './components/SellerLeastExpensiveProductsBar';
 
 function SellerDashboard() {
   const [searchParams] = useSearchParams();
@@ -76,6 +78,7 @@ function SellerDashboard() {
     fetchAndSetUserData();
   }, [sellerId]);
 
+  if (!userData) return null;
   return (
     <>
       <CheckCredentials>
@@ -94,6 +97,10 @@ function SellerDashboard() {
             <div className='flex flex-col gap-2'>
               <h1 className='text-4xl text-neutral-700 text-end font-extrabold'>Total Earned: ₱{totals.totalEarned.toLocaleString()}</h1>
               <h2 className='text-xl text-neutral-500 text-end font-bold'>Total Sold: {totals.totalSold.toLocaleString()}</h2>
+              <div className='flex flex-row gap-2 align-middle justify-end'>
+                <Link to={`/edit/seller?sellerId=${sellerId}`} className='bg-emerald-500 hover:bg-emerald-100 duration-200 ease-(--my-beizer) transform hover:scale-105 hover:text-emerald-500 hover:font-extrabold hover:border-2 border-emerald-500 text-white font-bold py-2 px-4 rounded w-fit self-end mt-3'>Edit Profile</Link>
+                <Link to={`/search?&searchStore=${userData.seller_name}`} className='bg-blue-500 hover:bg-blue-100 duration-200 ease-(--my-beizer) transform hover:scale-105 hover:text-blue-500 hover:font-extrabold hover:border-2 border-blue-500 text-white font-bold py-2 px-4 rounded w-fit self-end mt-3'>View Products</Link>
+              </div>
             </div>
           </div>
 
@@ -123,6 +130,13 @@ function SellerDashboard() {
             <SellerTopBuyersBar sellerId={sellerId} />
           </ChartBox>
 
+          <ChartBox title="Top 10 Most Expensive Items">
+            <SellerTopExpensiveProductsBar sellerId={sellerId} />
+          </ChartBox>
+
+          <ChartBox title="Top 10 Least Expensive Items">
+            <SellerLeastExpensiveProductsBar sellerId={sellerId} />
+          </ChartBox>
 
           </div>
         </div>

@@ -11,7 +11,7 @@ function EachOrder({ buyerId }) {
     async function awaitOrder() {
       if (hasFetched.current) return;
       hasFetched.current = true;
-      
+
       const data = await getOrder(buyerId);
       setOrderData(data);
     }
@@ -92,6 +92,7 @@ function EachOrder({ buyerId }) {
                       <p>Tracking Number: {order.delivery[0]?.tracking_number}</p>
                       <p>Courier: {order.delivery[0]?.courier_service}</p>
                       <p>Estimate Arrival: {new Date(order.delivery[0]?.delivery_date).toLocaleString()}</p>
+                      <p>Address: {order.delivery[0]?.address.postal_code == null ? "" : order.delivery[0]?.address.postal_code + ", "} {order.delivery[0]?.address.street}, {order.delivery[0]?.address.city}</p>
                       <p className="font-bold p-2">Status: <span className={`${getStatusColor(order.delivery[0]?.delivery_status)} rounded-lg p-1`}>{order.delivery[0]?.delivery_status}</span></p>
                     </div>
                   </div>

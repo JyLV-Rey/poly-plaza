@@ -81,7 +81,7 @@ function NavBar() {
             {userId ? (
               <div className="flex items-center space-x-3">
                 <Link
-                  to={`/dashboard/buyer?buyerId=${userId}`}
+                  to={`/edit/buyer?buyerId=${userId}`}
                   className="flex items-center space-x-2 bg-blue-50 px-4 py-3 rounded-full hover:bg-blue-100 transition-colors duration-200"
                 >
                   <User className="w-5 h-5 text-blue-600" />

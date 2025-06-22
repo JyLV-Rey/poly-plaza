@@ -13,7 +13,12 @@ async function getOrder(buyerId) {
             delivery_status,
             courier_service,
             tracking_number,
-            delivery_date
+            delivery_date,
+            address (
+              street,
+              city,
+              postal_code
+              )
           ),
 
           payment(

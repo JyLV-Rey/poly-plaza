@@ -64,8 +64,8 @@ function LoginAccount() {
 
       {/* Foreground content */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full">
-        <div className="flex flex-col items-center justify-around mt-20 p-8 bg-white/90 rounded-xl shadow-2xl backdrop-blur-md w-96">
-          <img src="/logo.png" alt="logo" className="w-32 h-32 mb-4" />
+        <div className="flex flex-col items-center justify-center align-middle mt-20 p-8 bg-white/90 rounded-xl shadow-2xl backdrop-blur-md w-96">
+          <img src="/logo.png" alt="logo" className="w-32 h-32 mb-4 self-center" />
           <h1 className="text-4xl shiny-text font-extrabold text-amber-700">PolyPlaza</h1>
           <p className="text-neutral-600 mb-6">Where demand meets expectation</p>
           {

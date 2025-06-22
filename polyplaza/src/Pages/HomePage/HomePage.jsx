@@ -1,5 +1,4 @@
-"use client"
-
+import '../Account/LoginAccount/style.css'
 import { useState, useEffect, useRef } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Search, TrendingUp, Package, ChevronLeft, ChevronRight } from "lucide-react"
@@ -7,6 +6,7 @@ import { useUser } from "../UserContext"
 import { supabase } from "../../supabase"
 import ProductCard from "./components/ProductCard"
 import { getCategories } from "../SearchPage/Components/query"
+import UserDebugger from '../UserDebugger'
 
 function HomePage() {
   const { userId, userFirstName } = useUser()
@@ -117,16 +117,21 @@ function HomePage() {
   }
 
   return (
+    
     <div className="min-h-screen bg-gray-50 w-full">
+      <UserDebugger />
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 pt-32 pb-20">
+      <div className="relative bg-gradient-to-bl from-pink-500 to-red-500 pt-32 pb-20">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Greeting */}
           {userId && (
-            <div className="text-center mb-12">
-              <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">Hi, {userFirstName}! 👋</h1>
-              <p className="text-blue-100 text-xl">Welcome back to PolyPlaza</p>
+            <div className="flex flex-col items-center justify-center align-middle">
+              <div className=" flex flex-col items-center justify-center align-middle text-center mb-12 gap-2 p-10 bg-white rounded-xl w-fit self-center">
+                <img src="/logo.png" alt="" className="w-40 self-center"/>
+                <p className="text-4xl shiny-text font-extrabold text-amber-700">PolyPlaza</p>
+                <p className="text-2xl  font-extrabold text-red-400">Welcome Back {userFirstName}!</p>
+              </div>
             </div>
           )}
 
@@ -134,7 +139,7 @@ function HomePage() {
           <div className="w-full max-w-none mx-auto">
             <form onSubmit={handleSearch} className="relative">
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white font-extrabold w-5 h-5" />
                 <input
                   type="text"
                   placeholder="Search for products..."
@@ -144,7 +149,7 @@ function HomePage() {
                 />
                 <button
                   type="submit"
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition-colors duration-200"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-amber-300 text-amber-900 font-bold px-6 py-2 rounded-xl hover:bg-amber-200 transition-colors duration-200"
                 >
                   Search
                 </button>

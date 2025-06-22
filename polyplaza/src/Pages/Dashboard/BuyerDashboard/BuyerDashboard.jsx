@@ -1,4 +1,4 @@
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from '../../../supabase';
 import { getTotalSpent, getTotalOrdersPlaced } from './components/userAggregate';
@@ -13,6 +13,8 @@ import BuyerPreferredSellersDoughnut from './components/BuyerPreferredSellersDou
 import BuyerPaymentMethodPie from './components/BuyerPaymentMethodPie';
 import ChartBox from '../ChartBox';
 import PieChartBox from '../PieChartBox';
+import BuyerMostExpensiveBoughtItemsBar from './components/BuyerMostExpensiveBoughtItemsBar';
+import BuyerLeastExpensiveBoughtItemsBar from './components/BuyerLeastExpensiveBoughtItemsBar';
 
 function BuyerDashboard() {
   const [searchParams] = useSearchParams();
@@ -60,7 +62,9 @@ function BuyerDashboard() {
 
           <div className='flex flex-row justify-between w-full'>
             <div className='flex flex-col gap-2'>
-              <h1 className='text-4xl text-neutral-700 text-start font-extrabold'>{userData?.first_name} {userData?.last_name}'s Profile</h1>
+              <div className='flex flex-row items-center gap-2'>
+                <h1 className='text-4xl text-neutral-700 text-start font-extrabold'>{userData?.first_name} {userData?.last_name}'s Profile</h1>
+              </div>
               <h2 className='text-xl text-neutral-600 text-start font-bold'>Email: {userData?.email}</h2>
               <h2 className='text-lg text-neutral-500 text-start font-medium'>Date Joined: {new Date(userData?.created_at).toLocaleString()}</h2>
               <h2 className='text-lg text-neutral-500 text-start font-medium'>Buyer ID: {buyerId}</h2>
@@ -68,6 +72,7 @@ function BuyerDashboard() {
             <div className='flex flex-col gap-2'>
               <h1 className='text-4xl text-neutral-700 text-end font-extrabold'>Total Spent: ₱{totalSpent.toLocaleString()}</h1>
               <h2 className='text-xl text-neutral-500 text-end font-bold'>Total Orders: {totalOrders.toLocaleString()}</h2>
+              <Link to={`/edit/buyer?buyerId=${buyerId}`} className='bg-emerald-500 hover:bg-emerald-100 duration-200 ease-(--my-beizer) transform hover:scale-105 hover:text-emerald-500 hover:font-extrabold hover:border-2 border-emerald-500 text-white font-bold py-2 px-4 rounded w-fit self-end mt-3'>Edit Profile</Link>
             </div>
           </div>
 
@@ -104,6 +109,14 @@ function BuyerDashboard() {
           <PieChartBox title='Payment Methods'>
             <BuyerPaymentMethodPie buyerId={buyerId} />
           </PieChartBox>
+
+          <ChartBox title="Most Expensive Items Bought">
+            <BuyerMostExpensiveBoughtItemsBar buyerId={buyerId} />
+          </ChartBox>
+
+          <ChartBox title="Least Expensive Items Bought">
+            <BuyerLeastExpensiveBoughtItemsBar buyerId={buyerId} />
+          </ChartBox>
 
           </div>
         </div>

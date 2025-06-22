@@ -9,6 +9,7 @@ function SearchItems() {
   const isDescending = searchParams.get('isDescending') === 'Ascending' ? false : true;
   const sortBy = searchParams.get('sortBy');
   const maxPrice = searchParams.get('maxPrice');
+  const searchStore = searchParams.get('searchStore');
 
   return (
     <div>
@@ -18,6 +19,7 @@ function SearchItems() {
         isDescending={isDescending}
         sortBy={sortBy}
         maxPrice={maxPrice}
+        searchStore={searchStore}
       />
     </div>
   );

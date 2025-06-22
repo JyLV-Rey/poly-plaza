@@ -7,7 +7,7 @@ import { Star, ShoppingCart, CreditCard } from "lucide-react"
 import { useUser } from "../../UserContext"
 import LoadingScreen from "./LoadingScreen"
 
-function ProductList({ searchTerm, searchCategory, isDescending, sortBy, maxPrice, limit = 500 }) {
+function ProductList({ searchTerm, searchCategory, isDescending, sortBy, maxPrice, limit = 500, searchStore }) {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -18,7 +18,7 @@ function ProductList({ searchTerm, searchCategory, isDescending, sortBy, maxPric
 
   useEffect(() => {
     fetchItems()
-  }, [searchTerm, searchCategory, isDescending, sortBy, maxPrice])
+  }, [searchTerm, searchCategory, isDescending, sortBy, maxPrice, searchStore])
 
   async function fetchItems() {
     setLoading(true)
@@ -42,7 +42,29 @@ function ProductList({ searchTerm, searchCategory, isDescending, sortBy, maxPric
           quantity
         )
       `).eq("is_deleted", false);
+    
+    if (searchStore) {
+      const { data: sellers, error: sellerError } = await supabase
+        .from("seller")
+        .select("seller_id")
+        .ilike("seller_name", `%${searchStore}%`);
 
+      if (sellerError) {
+        setError(sellerError.message);
+        return;
+      }
+
+      const matchingSellerIds = sellers.map(s => s.seller_id);
+      if (matchingSellerIds.length > 0) {
+        query = query.in("seller_id", matchingSellerIds);
+      } else {
+        // No matching sellers → return early with empty result
+        setItems([]);
+        setLoading(false);
+        return;
+      }
+    }
+    
     if (searchTerm) query = query.ilike("name", `%${searchTerm}%`)
     if (searchCategory) query = query.eq("category", searchCategory)
     if (maxPrice) {

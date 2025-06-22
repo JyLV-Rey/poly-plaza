@@ -19,11 +19,11 @@ function ConfirmOrderPage() {
 
   const [orderItems, setOrderItems] = useState([])
   const [selectedAddressIndex, setSelectedAddressIndex] = useState(null)
-  const [addresses, setAddresses] = useState([])
   const [paymentMethod, setPaymentMethod] = useState("")
   const [courierService, setCourierService] = useState("")
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [addressString, setAddressString] = useState("n/a")
 
   const courierOptions = [
     "J&T Express",
@@ -50,7 +50,6 @@ function ConfirmOrderPage() {
       setError("Invalid order parameters")
       setLoading(false)
     }
-    fetchAddresses()
   }, [productId, quantity, cartItemIds, userId])
 
   async function fetchSingleProduct() {
@@ -89,7 +88,7 @@ function ConfirmOrderPage() {
         },
       ])
     } catch (error) {
-      setError("Failed to fetch product details")
+      setError("Failed to fetch product details: ", error)
     } finally {
       setLoading(false)
     }
@@ -130,24 +129,12 @@ function ConfirmOrderPage() {
 
       setOrderItems(data || [])
     } catch (error) {
-      setError("Failed to fetch cart items")
+      setError("Failed to fetch cart items", error)
     } finally {
       setLoading(false)
     }
   }
 
-  async function fetchAddresses() {
-    try {
-      const { data } = await supabase
-        .from("address")
-        .select("address_id, street, city, postal_code")
-        .eq("buyer_id", userId)
-
-      setAddresses(data || [])
-    } catch (error) {
-      console.error("Error fetching addresses:", error)
-    }
-  }
 
   async function confirmOrder() {
     if (!selectedAddressIndex && selectedAddressIndex !== 0) {
@@ -185,6 +172,8 @@ function ConfirmOrderPage() {
       const { error: orderItemError } = await supabase.from("order_item").insert(orderItemsData)
       if (orderItemError) throw orderItemError
 
+
+
       const { error: paymentError } = await supabase.from("payment").insert({
         order_id: order.order_id,
         payment_method: paymentMethod,
@@ -192,12 +181,11 @@ function ConfirmOrderPage() {
       })
       if (paymentError) throw paymentError
 
-      const selectedAddress = addresses[selectedAddressIndex]
       const { error: deliveryError } = await supabase.from("delivery").insert({
         order_id: order.order_id,
         delivery_status: "Preparing",
         courier_service: courierService,
-        buyer_address_id: selectedAddress.address_id,
+        buyer_address_id: selectedAddressIndex,
       })
       if (deliveryError) throw deliveryError
 
@@ -218,11 +206,11 @@ function ConfirmOrderPage() {
   if (loading) {
     return (
       <CheckCredentials>
-        <div className="min-h-screen bg-gray-50 pt-20 flex justify-center items-center">
+        <div className="min-h-screen bg-neutral-50 pt-20 flex justify-center items-center">
           <div className="bg-white rounded-3xl shadow-sm p-8 ">
             <div className="animate-pulse">
-              <div className="h-8 bg-gray-200 rounded w-48 mb-4 "></div>
-              <div className="h-4 bg-gray-200 rounded w-32"></div>
+              <div className="h-8 bg-neutral-200 rounded w-48 mb-4 "></div>
+              <div className="h-4 bg-neutral-200 rounded w-32"></div>
             </div>
           </div>
         </div>
@@ -233,15 +221,15 @@ function ConfirmOrderPage() {
   if (error) {
     return (
       <CheckCredentials>
-        <div className="min-h-screen bg-gray-50 pt-20 flex justify-center items-center ">
+        <div className="min-h-screen bg-neutral-50 pt-20 flex justify-center items-center ">
           <div className="text-center bg-white rounded-3xl shadow-sm p-8 max-w-md">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Error</h3>
-            <p className="text-gray-600 mb-6">{error}</p>
+            <h3 className="text-xl font-semibold text-neutral-900 mb-2">Error</h3>
+            <p className="text-neutral-600 mb-6">{error}</p>
             <button
               onClick={() => navigate("/search")}
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-2xl transition-colors duration-200"
@@ -257,11 +245,11 @@ function ConfirmOrderPage() {
   if (orderItems.length === 0) {
     return (
       <CheckCredentials>
-        <div className="min-h-screen bg-gray-50 pt-20 flex justify-center items-center">
+        <div className="min-h-screen bg-neutral-50 pt-20 flex justify-center items-center">
           <div className="text-center bg-white rounded-3xl shadow-sm p-8 max-w-md">
-            <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Items Found</h3>
-            <p className="text-gray-600 mb-6">No items found for this order</p>
+            <ShoppingBag className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-neutral-900 mb-2">No Items Found</h3>
+            <p className="text-neutral-600 mb-6">No items found for this order</p>
             <button
               onClick={() => navigate("/search")}
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-2xl transition-colors duration-200"
@@ -280,28 +268,28 @@ function ConfirmOrderPage() {
   return (
     <CheckCredentials>
       <div className="min-h-screen min-w-screen">
-        <div className="p-20 bg-gray-50 pt-20 text-black">
+        <div className="p-20 bg-neutral-50 pt-20 text-black">
           <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
             {/* Header */}
             <div className="text-center mb-8">
               <div className="flex items-center justify-center mb-4">
                 <CheckCircle className="w-8 h-8 text-blue-600 mr-3" />
-                <h1 className="text-4xl font-bold text-gray-900">Confirm Your Order</h1>
+                <h1 className="text-4xl font-bold text-neutral-900">Confirm Your Order</h1>
               </div>
-              <p className="text-gray-600">Review your order details and complete your purchase</p>
+              <p className="text-neutral-600">Review your order details and complete your purchase</p>
             </div>
 
             <div className="space-y-6">
               {/* Order Details */}
-              <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+              <div className="bg-white rounded-3xl shadow-sm border border-neutral-200 p-6">
                 <div className="flex items-center mb-6">
                   <ShoppingBag className="w-6 h-6 text-blue-600 mr-3" />
-                  <h2 className="text-2xl font-bold text-gray-900">Order Details ({orderItems.length} items)</h2>
+                  <h2 className="text-2xl font-bold text-neutral-900">Order Details ({orderItems.length} items)</h2>
                 </div>
 
                 <div className="space-y-4">
                   {orderItems.map((item, index) => (
-                    <div key={index} className="flex items-center p-4 bg-gray-50 rounded-2xl">
+                    <div key={index} className="flex items-center p-4 bg-neutral-50 rounded-2xl">
                       {item.product.product_image?.[0] && (
                         <img
                           src={item.product.product_image[0].image_url || "/placeholder.svg"}
@@ -310,15 +298,15 @@ function ConfirmOrderPage() {
                         />
                       )}
                       <div className="flex-grow">
-                        <h3 className="text-xl font-semibold text-gray-900">{item.product.name}</h3>
-                        <p className="text-gray-600">{item.product.description}</p>
-                        <p className="text-sm text-gray-500">Seller: {item.product.seller.seller_name}</p>
+                        <h3 className="text-xl font-semibold text-neutral-900">{item.product.name}</h3>
+                        <p className="text-neutral-600">{item.product.description}</p>
+                        <p className="text-sm text-neutral-500">Seller: {item.product.seller.seller_name}</p>
                         <p className="text-lg font-bold text-blue-600">
                           ₱{item.product.price} x {item.quantity}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-xl font-bold text-gray-900">
+                        <p className="text-xl font-bold text-neutral-900">
                           ₱{(item.product.price * item.quantity).toFixed(2)}
                         </p>
                       </div>
@@ -326,16 +314,16 @@ function ConfirmOrderPage() {
                   ))}
                 </div>
 
-                <div className="text-right pt-6 border-t border-gray-200 mt-6">
+                <div className="text-right pt-6 border-t border-neutral-200 mt-6">
                   <p className="text-3xl font-bold text-blue-600">Total: ₱{totalPrice.toFixed(2)}</p>
                 </div>
               </div>
 
               {/* Seller Info */}
-              <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+              <div className="bg-white rounded-3xl shadow-sm border border-neutral-200 p-6">
                 <div className="flex items-center mb-6">
                   <Store className="w-6 h-6 text-blue-600 mr-3" />
-                  <h2 className="text-2xl font-bold text-gray-900">
+                  <h2 className="text-2xl font-bold text-neutral-900">
                     Seller Information ({uniqueSellers.length} seller{uniqueSellers.length > 1 ? "s" : ""})
                   </h2>
                 </div>
@@ -345,10 +333,10 @@ function ConfirmOrderPage() {
                     const sellerItem = orderItems.find((item) => item.product.seller.seller_id === sellerId)
                     const seller = sellerItem.product.seller
                     return (
-                      <div key={sellerId} className="bg-gray-50 p-4 rounded-2xl">
-                        <p className="font-semibold text-gray-900">{seller.seller_name}</p>
+                      <div key={sellerId} className="bg-neutral-50 p-4 rounded-2xl">
+                        <p className="font-semibold text-neutral-900">{seller.seller_name}</p>
                         {seller.address && (
-                          <p className="text-gray-600">
+                          <p className="text-neutral-600">
                             {seller.address.street}, {seller.address.city}
                             {seller.address.postal_code && `, ${seller.address.postal_code}`}
                           </p>
@@ -360,19 +348,20 @@ function ConfirmOrderPage() {
               </div>
 
               {/* Address Selection */}
-              <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+              <div className="bg-white rounded-3xl shadow-sm border border-neutral-200 p-6">
                 <div className="flex items-center mb-6">
                   <MapPin className="w-6 h-6 text-blue-600 mr-3" />
-                  <h2 className="text-2xl font-bold text-gray-900">Delivery Address</h2>
+                  <h2 className="text-2xl font-bold text-neutral-900">Delivery Address</h2>
                 </div>
-                <AddressBook setFunction={setSelectedAddressIndex} />
+                <h2 className="text-lg font-medium text-neutral-500 italic">{addressString}</h2>
+                <AddressBook setFunction={setSelectedAddressIndex} returnAddress={setAddressString}/>
               </div>
 
               {/* Payment Method */}
-              <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+              <div className="bg-white rounded-3xl shadow-sm border border-neutral-200 p-6">
                 <div className="flex items-center mb-6">
                   <CreditCard className="w-6 h-6 text-blue-600 mr-3" />
-                  <h2 className="text-2xl font-bold text-gray-900">Payment Method</h2>
+                  <h2 className="text-2xl font-bold text-neutral-900">Payment Method</h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -383,7 +372,7 @@ function ConfirmOrderPage() {
                       className={`p-6 border-2 rounded-2xl font-semibold transition-all duration-200 ${
                         paymentMethod === method.id
                           ? "border-blue-500 bg-blue-50 text-blue-700"
-                          : "border-gray-300 hover:border-blue-300 hover:bg-gray-50"
+                          : "border-neutral-300 hover:border-blue-300 hover:bg-neutral-50"
                       }`}
                     >
                       <div className="text-2xl mb-2">{method.icon}</div>
@@ -394,16 +383,16 @@ function ConfirmOrderPage() {
               </div>
 
               {/* Courier Service */}
-              <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+              <div className="bg-white rounded-3xl shadow-sm border border-neutral-200 p-6">
                 <div className="flex items-center mb-6">
                   <Truck className="w-6 h-6 text-blue-600 mr-3" />
-                  <h2 className="text-2xl font-bold text-gray-900">Courier Service</h2>
+                  <h2 className="text-2xl font-bold text-neutral-900">Courier Service</h2>
                 </div>
 
                 <select
                   value={courierService}
                   onChange={(e) => setCourierService(e.target.value)}
-                  className="w-full p-4 border-2 border-gray-300 rounded-2xl focus:border-blue-500 focus:outline-none text-lg"
+                  className="w-full p-4 border-2 border-neutral-300 rounded-2xl focus:border-blue-500 focus:outline-none text-lg"
                 >
                   <option value="">Select a courier service</option>
                   {courierOptions.map((courier) => (
@@ -419,7 +408,7 @@ function ConfirmOrderPage() {
                 <button
                   onClick={confirmOrder}
                   disabled={loading}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 px-12 rounded-2xl text-xl transition-colors duration-200"
+                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-neutral-300 disabled:cursor-not-allowed text-white font-bold py-4 px-12 rounded-2xl text-xl transition-colors duration-200"
                 >
                   {loading ? "Processing..." : `Confirm Order - ₱${totalPrice.toFixed(2)}`}
                 </button>
