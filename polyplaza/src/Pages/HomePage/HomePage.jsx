@@ -164,8 +164,8 @@ async function fetchTrendingProducts() {
           {/* Search Bar */}
           <div className="w-full max-w-none mx-auto">
             <form onSubmit={handleSearch} className="relative">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white font-extrabold w-5 h-5" />
+              <div className="relative text-neutral-800 font-extrabold">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2  font-extrabold w-5 h-5" />
                 <input
                   type="text"
                   placeholder="Search for products..."
