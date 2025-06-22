@@ -37,7 +37,9 @@ function ViewProduct() {
         seller (
           seller_id,
           seller_name,
-          address (street, city, postal_code)
+          is_deleted,
+          address (street, city, postal_code),
+          buyer (buyer_id)
         ),
         review (
           rating,
@@ -139,6 +141,8 @@ function ViewProduct() {
     ))
   }
 
+  if(item.is_deleted || item.seller?.is_deleted) 
+    return <div className="min-h-screen min-w-screen bg-gray-50 font-extrabold text-neutral-900 flex justify-center items-center text-6xl">Product is disabled</div>
   // Check if product is out of stock
   const isOutOfStock = !item.quantity || item.quantity <= 0
 

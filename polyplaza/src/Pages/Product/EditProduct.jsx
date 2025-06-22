@@ -10,6 +10,7 @@ export default function EditProduct() {
   const [category, setCategory] = useState('');
   const [imageUrls, setImageUrls] = useState(['']);
   const [status, setStatus] = useState('');
+  const [quantity, setQuantity] = useState('');
 
   const [searchParams] = useSearchParams();
   const productId = searchParams.get('productId');
@@ -21,7 +22,7 @@ export default function EditProduct() {
 
       const { data: product, error: productError } = await supabase
         .from('product')
-        .select('name, description, price, category')
+        .select('name, description, price, category, quantity')
         .eq('product_id', productId)
         .single();
 
@@ -36,6 +37,7 @@ export default function EditProduct() {
         return;
       }
 
+      setQuantity(product.quantity?.toString() ?? '');
       setName(product.name);
       setDescription(product.description);
       setPrice(product.price.toString());
@@ -51,17 +53,19 @@ export default function EditProduct() {
     e.preventDefault();
     setStatus('Updating product...');
 
-    if (
-      !name ||
-      !description ||
-      !price ||
-      !category ||
-      imageUrls.some((url) => !url.trim()) ||
-      !/^\d+$/.test(price)
-    ) {
-      setStatus('Please fill all fields properly. Price must be a whole number.');
-      return;
-    }
+  if (
+    !name ||
+    !description ||
+    !price ||
+    !category ||
+    !quantity ||
+    imageUrls.some((url) => !url.trim()) ||
+    !/^\d+$/.test(price) ||
+    !/^\d+$/.test(quantity)
+  ) {
+    setStatus('Please fill all fields properly. Price and quantity must be whole numbers.');
+    return;
+  }
 
     const { error: updateError } = await supabase
       .from('product')
@@ -69,7 +73,8 @@ export default function EditProduct() {
         name,
         description,
         price: parseFloat(price),
-        category
+        category,
+        quantity: parseInt(quantity)
       })
       .eq('product_id', productId);
 
@@ -149,6 +154,8 @@ export default function EditProduct() {
             <TextField data={description} label="Description" header="Description" value={description} setFunction={setDescription} isRequired />
             <TextField data={price} label="Price (₱)" header="Price" type="number" value={price} setFunction={setPrice} isRequired />
             <TextField data={category} label="Category" header="Category" value={category} setFunction={setCategory} isRequired />
+            <TextField data={quantity} label="Quantity" header="Quantity" type="number" value={quantity} setFunction={setQuantity} isRequired />
+
           </div>
 
           <div className='flex flex-col p-5 border-2 border-neutral-300 rounded-2xl'>

@@ -55,6 +55,8 @@ function BuyerDashboard() {
     fetchAndSetUserData();
   }, [buyerId]);
 
+  if(userData?.is_deleted) return <div className="min-h-screen min-w-screen bg-gray-50 font-extrabold text-neutral-900 flex justify-center items-center text-6xl">Buyer is Deleted</div>
+
   return (
     <>
       <CheckCredentials>
