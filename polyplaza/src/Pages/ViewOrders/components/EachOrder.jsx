@@ -1,43 +1,58 @@
-import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import getOrder from "./ViewOrder";
 import { BadgeCentIcon, ReceiptText, Truck } from "lucide-react";
+import OrderFilterBar from "./OrderFilterBar";
 
 function EachOrder({ buyerId }) {
   const [orderData, setOrderData] = useState(null);
-  const hasFetched = useRef(false);
+  const location = useLocation();
+
+  // ✅ Fetch orders from Supabase
+  async function fetchOrders() {
+    const params = new URLSearchParams(location.search);
+    const filters = {
+      orderStatus: params.get("orderStatus") || "",
+      deliveryStatus: params.get("deliveryStatus") || "",
+      paymentStatus: params.get("paymentStatus") || "",
+      sortBy: params.get("sortBy") || "order_id",
+      isDescending: params.get("isDescending") || "Descending",
+    };
+
+    const data = await getOrder(buyerId, filters);
+    setOrderData(data);
+  }
 
   useEffect(() => {
-    async function awaitOrder() {
-      if (hasFetched.current) return;
-      hasFetched.current = true;
-
-      const data = await getOrder(buyerId);
-      setOrderData(data);
+    if (buyerId) {
+      fetchOrders();
     }
-
-    awaitOrder();
-  }, [buyerId]);
+  }, [buyerId, location.search]);
 
   if (!orderData) {
     return <p>Loading orders...</p>;
   }
 
   function getStatusColor(status) {
-    switch(status) {
-      case "In Transit":
-        return "bg-yellow-100 text-yellow-800"
+    switch (status) {
+      case "Pending":
+      case "In Transit": return "bg-yellow-100 text-yellow-800";
       case "Delivered":
-        return "bg-emerald-100 text-emerald-800"
+      case "Paid":
+      case "Success": return "bg-emerald-100 text-emerald-800";
       case "Failed":
-        return "bg-red-100 text-red-800"
+      case "Cancelled":
+      case "Refunded":
+      case "Returned": return "bg-red-100 text-red-800";
       case "Preparing":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
     }
   }
-
   return (
     <>
+      <div className="flex flex-col flex-wrap flex-grow items-center w-full gap-5 justify-between">
+      <OrderFilterBar onApply={fetchOrders} />
+      <div className='flex flex-row flex-wrap flex-grow items-center w-full gap-5 justify-between mt-10'>
       {
         orderData.map((order, index) => (
             <div key={index} className=" flex flex-grow  p-5 h-fit w-fit border-2 border-neutral-300 rounded-4xl shadow-xl/10 hover:shadow-2xl hover:scale-[102%] duration-200 ease-(--my-beizer)">
@@ -47,8 +62,9 @@ function EachOrder({ buyerId }) {
                   <div className="flex flex-row space-x-2 text-neutral-700">
                     <ReceiptText /> <p className=" font-bold text-xl">  Order ID: {order.order_id}</p>
                   </div>
-                  
+
                   <p className="text-neutral-500 font-bold text-sm">Ordered At: {new Date(order.ordered_at).toLocaleString()}</p>
+                  <p className="text-neutral-500 font-bold text-sm mt-2">Status: <span className={`${getStatusColor(order.status)}  p-1`}>{order.status}</span></p>
                 </div>
                 </Link>
                 <div className="flex flex-col items-start flex-wrap justify-start h-fit w-full gap-5 mt-5 mb-5 border-2 border-neutral-300 rounded-xl p-2">
@@ -93,7 +109,7 @@ function EachOrder({ buyerId }) {
                       <p>Courier: {order.delivery[0]?.courier_service}</p>
                       <p>Estimate Arrival: {new Date(order.delivery[0]?.delivery_date).toLocaleString()}</p>
                       <p>Address: {order.delivery[0]?.address.postal_code == null ? "" : order.delivery[0]?.address.postal_code + ", "} {order.delivery[0]?.address.street}, {order.delivery[0]?.address.city}</p>
-                      <p className="font-bold p-2">Status: <span className={`${getStatusColor(order.delivery[0]?.delivery_status)} rounded-lg p-1`}>{order.delivery[0]?.delivery_status}</span></p>
+                      <p className="font-bold mt-3">Delivery Status: <span className={`${getStatusColor(order.delivery[0]?.delivery_status)} rounded-lg p-1`}>{order.delivery[0]?.delivery_status}</span></p>
                     </div>
                   </div>
 
@@ -101,9 +117,10 @@ function EachOrder({ buyerId }) {
                     <div className='flex flex-row space-x-2'>
                       <BadgeCentIcon/><p className="font-bold">Payment Information</p>
                     </div>
-                    <div className="flex flex-col text-start">
+                    <div className="flex flex-col text-start text-sm">
                       <p>Method: {order.payment[0]?.payment_method}</p>
                       <p>Reference Number: {order.payment[0]?.payment_id}</p>
+
                       {
                         (() => {
                           const totalPaid = order.order_item.reduce((sum, item) => {
@@ -112,6 +129,7 @@ function EachOrder({ buyerId }) {
                           return <p className="font-bold text-blue-700">Total Paid: ₱{totalPaid.toLocaleString()}</p>;
                         })()
                       }
+                      <p className="font-bold mt-3">Payment Staus: <span className={`${getStatusColor(order.payment[0]?.payment_status)} rounded-lg p-1`}>{order.payment[0]?.payment_status}</span></p>
                     </div>
                   </div>
                 </Link>
@@ -122,6 +140,8 @@ function EachOrder({ buyerId }) {
           
         ))
       }
+      </div>
+      </div>
     </>
   );
 }

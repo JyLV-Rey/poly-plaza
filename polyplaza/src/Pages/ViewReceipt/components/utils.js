@@ -9,6 +9,7 @@ export function getStatusColor(status) {
     case "Returned": return "bg-pink-100 text-pink-800"
     case "Shipped": return "bg-purple-100 text-purple-800"
     case "Failed": return "bg-red-100 text-red-800"
+    case "Refunded": return "bg-red-100 text-red-800"
     default: return "bg-gray-100 text-gray-800"
   }
 }

@@ -129,6 +129,106 @@ function ViewReceipt() {
     )
   }
 
+  async function handleRefund() {
+
+    const reason = window.prompt("Please enter the reason for refund: ");
+
+    const { error: paymentError } = await supabase
+    .from("payment")
+    .update({ payment_status: "Refunded" })
+    .eq("order_id", orderId)
+    .single()
+
+    if (paymentError) {
+      console.log(paymentError)
+    }
+
+    const { error: deliveryError } = await supabase
+    .from("delivery")
+    .update({ delivery_status: "Returned" })
+    .eq("order_id", orderId)
+    .single()
+
+    if (deliveryError) {
+      console.log(deliveryError)
+    }
+
+    const { error: orderError } = await supabase
+    .from("order")
+    .update({ status: "Refunded" })
+    .eq("order_id", orderId)
+    .single()
+
+    if (orderError) {
+      console.log(orderError)
+    }
+
+    const {error: refundError} = await supabase
+    .from("refund")
+    .insert({
+      refund_reason: reason,
+      order_id: orderId,
+      refund_status: "Pending"
+    })
+    .single()
+
+    if (refundError) {
+      console.log(refundError)
+    }
+
+    window.location.reload()
+  }
+
+  async function handleCancel() {
+
+    const reason = window.prompt("Please enter the reason for cancellation: ");
+
+    const { error: deliveryError } = await supabase
+    .from("delivery")
+    .update({ delivery_status: "Cancelled" })
+    .eq("order_id", orderId)
+    .single()
+
+    if (deliveryError) {
+      console.log(deliveryError)
+    }
+
+    const { error: orderError } = await supabase
+    .from("order")
+    .update({ status: "Cancelled" })
+    .eq("order_id", orderId)
+    .single()
+
+    if (orderError) {
+      console.log(orderError)
+    }
+
+    const { error: paymentError } = await supabase
+    .from("payment")
+    .update({ payment_status: "Cancelled" })
+    .eq("order_id", orderId)
+    .single()
+
+    if (paymentError) {
+      console.log(paymentError)
+    }
+
+    const {error: cancelError} = await supabase
+    .from("cancel")
+    .insert({
+      cancel_reason: reason,
+      order_id: orderId
+    })
+    .single()
+
+    if (cancelError) {
+      console.log(cancelError)
+    }
+
+    window.location.reload()
+  }
+
+
   const seller = orderData.order_item[0]?.product.seller
 
   return (
@@ -156,8 +256,8 @@ function ViewReceipt() {
             <ProcessingPaymentNotice />
           )}
           <div className="flex justify-end space-x-4">
-            <button disabled={!canCancel} className={`font-bold py-2 px-4 rounded ${canCancel ? "bg-red-500 hover:bg-red-100 hover:text-red-700 duration-300 hover:scale-105 ease-[var(--my-beizer)] border-red-700 hover:border-2 cursor-pointer" : "cursor-not-allowed bg-neutral-600 text-neutral-400"}`}>Cancel</button>
-            <button disabled={!canRefund} className={`font-bold py-2 px-4 rounded ${canRefund ? "bg-amber-500 hover:bg-amber-100 hover:text-amber-700 duration-300 hover:scale-105 ease-[var(--my-beizer)] border-amber-700 cursor-pointer hover:border-2" : "cursor-not-allowed bg-neutral-600 text-neutral-400"}`}>Refund</button>
+            <button disabled={!canCancel} onClick={handleCancel} className={`font-bold py-2 px-4 rounded ${canCancel ? "bg-red-500 hover:bg-red-100 hover:text-red-700 duration-300 hover:scale-105 ease-[var(--my-beizer)] border-red-700 hover:border-2 cursor-pointer" : "cursor-not-allowed bg-neutral-600 text-neutral-400"}`}>Cancel</button>
+            <button disabled={!canRefund} onClick={handleRefund} className={`font-bold py-2 px-4 rounded ${canRefund ? "bg-amber-500 hover:bg-amber-100 hover:text-amber-700 duration-300 hover:scale-105 ease-[var(--my-beizer)] border-amber-700 cursor-pointer hover:border-2" : "cursor-not-allowed bg-neutral-600 text-neutral-400"}`}>Refund</button>
           </div>
         </div>
       </div>

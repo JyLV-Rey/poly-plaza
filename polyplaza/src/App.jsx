@@ -15,6 +15,7 @@ import ViewOrders from "./Pages/ViewOrders/ViewOrders"
 import EditBuyer from "./Pages/Account/EditAccount/EditBuyer"
 import EditSeller from "./Pages/Account/EditAccount/EditSeller"
 import EditAddress from "./GlobalFeatures/EditAddress"
+import CreateProduct from "./Pages/Product/CreateProduct"
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/product/confirm_order" element={<ConfirmOrderPage />} />
           <Route path="/product/view_receipt" element={<ViewReceipt />} />
+          <Route path='/product/create' element={<CreateProduct/>}/>
           <Route path="/orders" element={<ViewOrders/>}/>
           <Route path="/edit/buyer" element={<EditBuyer/>}/>
           <Route path="/edit/seller" element={<EditSeller/>}/>
