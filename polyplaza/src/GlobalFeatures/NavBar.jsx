@@ -62,7 +62,7 @@ function NavBar() {
               className="flex items-center px-4 py-3 rounded-full text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
             >
               <User className="w-5 h-5 mr-2" />
-              Profile
+              Buyer Dashboard
             </Link>
 
             {userSellerId && (

@@ -103,7 +103,7 @@ function ConfirmOrderPage() {
         .select(`
           cart_item_id,
           quantity,
-          product (
+          product:product_id (
             product_id,
             name,
             price,
@@ -127,13 +127,22 @@ function ConfirmOrderPage() {
         return
       }
 
-      setOrderItems(data || [])
+      // Each entry has same shape as single product
+      const transformed = data.map(item => ({
+        product: item.product,
+        quantity: item.quantity,
+        cart_item_id: item.cart_item_id,
+      }))
+
+      setOrderItems(transformed)
     } catch (error) {
-      setError("Failed to fetch cart items", error)
+      console.error("Failed to fetch cart items:", error)
+      setError("Failed to fetch cart items")
     } finally {
       setLoading(false)
     }
   }
+
 
 
   async function confirmOrder() {
@@ -171,6 +180,16 @@ function ConfirmOrderPage() {
 
       const { error: orderItemError } = await supabase.from("order_item").insert(orderItemsData)
       if (orderItemError) throw orderItemError
+
+      // Decrease product quantity using RPC call
+      for (const item of orderItems) {
+        const { error: quantityError } = await supabase.rpc("decrease_quantity", {
+          pid: item.product.product_id,
+          qty: item.quantity,
+        })
+
+        if (quantityError) throw quantityError
+      }
 
 
 

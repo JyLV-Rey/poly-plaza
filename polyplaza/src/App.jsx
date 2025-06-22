@@ -16,6 +16,7 @@ import EditBuyer from "./Pages/Account/EditAccount/EditBuyer"
 import EditSeller from "./Pages/Account/EditAccount/EditSeller"
 import EditAddress from "./GlobalFeatures/EditAddress"
 import CreateProduct from "./Pages/Product/CreateProduct"
+import EditProduct from "./Pages/Product/EditProduct"
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Route path="/product/confirm_order" element={<ConfirmOrderPage />} />
           <Route path="/product/view_receipt" element={<ViewReceipt />} />
           <Route path='/product/create' element={<CreateProduct/>}/>
+          <Route path='/product/edit' element={<EditProduct/>}/>
           <Route path="/orders" element={<ViewOrders/>}/>
           <Route path="/edit/buyer" element={<EditBuyer/>}/>
           <Route path="/edit/seller" element={<EditSeller/>}/>

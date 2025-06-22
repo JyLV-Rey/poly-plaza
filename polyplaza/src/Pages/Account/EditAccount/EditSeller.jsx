@@ -24,7 +24,7 @@ function EditSeller() {
     const fetchBuyerInfo = async () => {
       const { data: sellerData, error: sellerError } = await supabase
         .from("seller")
-        .select("seller_name, address, buyer_id")
+        .select("seller_name, address_id, buyer_id")
         .eq("seller_id", sellerId)
         .single();
 
@@ -55,7 +55,7 @@ function EditSeller() {
 
     const { error: buyerError } = await supabase.from("seller").update({
       seller_name: newSellerName,
-      address: newAddress,
+      address_id: newAddress,
     }).eq("seller_id", sellerId);
 
     if (buyerError) {

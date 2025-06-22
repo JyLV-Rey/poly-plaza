@@ -47,15 +47,6 @@ function CreateAccountBuyer() {
       return;
     }
 
-    const { error2 } = await supabase.from("cart").insert({
-      buyer_id: data.buyer_id
-    });
-
-    if (error2) {
-      setErrorMessage("Failed to create cart for some reason.");
-      return;
-    }
-
     const { error3 } = await supabase.from("address").insert({
       buyer_id: data.buyer_id,
       street: street,

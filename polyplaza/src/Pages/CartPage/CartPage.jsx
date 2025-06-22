@@ -22,28 +22,30 @@ function CartPage() {
     if (!userId) return
 
     try {
-      const { data } = await supabase
-        .from("cart")
+      const { data, error } = await supabase
+        .from("cartitem")
         .select(`
-          cart_id,
-          cartitem (
-            cart_item_id,
-            quantity,
-            product (
-              product_id,
-              name,
-              price,
-              description,
-              product_image (
-                image_url
-              )
+          cart_item_id,
+          quantity,
+          product:product_id (
+            product_id,
+            name,
+            price,
+            description,
+            product_image (
+              image_url
             )
           )
         `)
-        .eq("buyer_id", userId)
-        .single()
+        .eq("buyer_id", userId);
 
-      setCartItems(data?.cartitem || [])
+      if (error) {
+        console.error("Error fetching cart items:", error);
+        return;
+      }
+
+      setCartItems(data || []);
+
     } catch (error) {
       console.error("Error fetching cart items:", error)
     } finally {

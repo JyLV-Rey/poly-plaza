@@ -9,7 +9,7 @@ import QuantityButton from "./components/QuantityButton"
 import EditButton from "./components/EditButton"
 import CreateReview from "./components/CreateReview"
 import CartButton from "./components/CartButton"
-import { Star, Package, Store, Heart, Share2, ChevronDown, ChevronUp } from "lucide-react"
+import { Star, Package, Store, Heart, Share2, ChevronDown, ChevronUp, Box } from "lucide-react"
 import ProductPriceHistoryLineChart from "./components/PriceHistory"
 
 function ViewProduct() {
@@ -32,6 +32,7 @@ function ViewProduct() {
         description,
         category,
         price,
+        quantity,
         product_image (
           image_url
         ),
@@ -192,8 +193,12 @@ function ViewProduct() {
                         <span className="text-sm text-gray-600 ml-2">({item.review?.length || 0} reviews)</span>
                       </div>
                       <div className="flex items-center text-sm text-gray-600">
-                        <Package className="w-4 h-4 mr-1" />
-                        {item.order_item?.length || 0} sold
+                        <div className="flex flex-row">
+                          <Package className="w-4 h-4 mr-1" />
+                          <p>{item.order_item?.length || 0} sold</p>
+                          <Box className="w-4 h-4 ml-5" />
+                          <p className="ml-1">  {item.quantity} items left</p>
+                        </div>
                       </div>
                     </div>
                     <p className="text-5xl font-bold text-blue-600 mb-4">₱{item.price?.toLocaleString()}</p>

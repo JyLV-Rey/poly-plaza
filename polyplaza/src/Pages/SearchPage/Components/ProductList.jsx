@@ -28,6 +28,7 @@ function ProductList({ searchTerm, searchCategory, isDescending, sortBy, maxPric
         product_id,
         name,
         category,
+        quantity,
         price,
         product_image (
           image_url
@@ -147,23 +148,10 @@ function ProductList({ searchTerm, searchCategory, isDescending, sortBy, maxPric
 
     setAddingToCart((prev) => ({ ...prev, [productId]: true }))
     try {
-      let { data: cart } = await supabase.from("cart").select("cart_id").eq("buyer_id", userId).single()
-
-      if (!cart) {
-        const { data: newCart, error: cartError } = await supabase
-          .from("cart")
-          .insert({ buyer_id: userId })
-          .select("cart_id")
-          .single()
-
-        if (cartError) throw cartError
-        cart = newCart
-      }
-
       const { data: existingItem } = await supabase
         .from("cartitem")
         .select("cart_item_id, quantity")
-        .eq("cart_id", cart.cart_id)
+        .eq("buyer_id", userId)
         .eq("product_id", productId)
         .single()
 
@@ -177,7 +165,7 @@ function ProductList({ searchTerm, searchCategory, isDescending, sortBy, maxPric
         setMessages((prev) => ({ ...prev, [productId]: "Updated quantity in cart!" }))
       } else {
         const { error } = await supabase.from("cartitem").insert({
-          cart_id: cart.cart_id,
+          buyer_id: userId,
           product_id: productId,
           quantity: 1,
         })
@@ -196,6 +184,7 @@ function ProductList({ searchTerm, searchCategory, isDescending, sortBy, maxPric
     }
   }
 
+
   function renderProductCard(item) {
     return (
       <div
@@ -205,19 +194,19 @@ function ProductList({ searchTerm, searchCategory, isDescending, sortBy, maxPric
         <div className="p-4">
         {/* Product Image */}
         <Link to={`/product/view?productId=${item.product_id}`}>
-          <div className="aspect-square overflow-hidden bg-gray-100">
-            <img
-              style={{ imageRendering: "pixelated" }}
-              src={item.product_image?.[0]?.image_url || "/placeholder.svg?height=300&width=300"}
-              alt={item.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
+          <div className="aspect-square overflow-hidden bg-gray-100 max-h-72">
+          <img
+            style={{ imageRendering: "pixelated" }}
+            src={item.product_image?.[0]?.image_url || "/placeholder.svg?height=300&width=300"}
+            alt={item.name}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 rounded-lg"
+          />
           </div>
         
 
         {/* Product Info */}
         
-            <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
+            <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-blue-600 mt-5 transition-colors">
               {item.name}
             </h3>
 
@@ -229,6 +218,7 @@ function ProductList({ searchTerm, searchCategory, isDescending, sortBy, maxPric
             </div>
             <span className="text-gray-300">•</span>
             <span className="text-sm text-gray-600">{getTotalOrders(item.order_item)} sold</span>
+            <span className="ml-5 text-sm text-gray-600">{item.quantity} left</span>
           </div>
 
           <div className="flex items-center justify-between mb-3">
