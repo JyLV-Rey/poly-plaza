@@ -94,7 +94,7 @@ function BuyersView() {
                   <p className="truncate whitespace-nowrap overflow-hidden text-ellipsis px-2 max-w-[150px]">{buyer.phone}</p>
                   <p className="truncate whitespace-nowrap overflow-hidden text-ellipsis px-2">{new Date(buyer.created_at).toLocaleString()}</p>
                   <p className="truncate whitespace-nowrap overflow-hidden text-ellipsis px-2 max-w-[150px]">{buyer.is_deleted ? "Yes" : "No"}</p>
- 
+
                   {/* Stop propagation so the row click doesn't fire */}
                   <div onClick={(e) => e.stopPropagation()}>
                     <button

@@ -17,30 +17,16 @@ function CartButton({ productId, quantity }) {
 
     setIsAdding(true)
     try {
-      // Get or create cart for user
-      let { data: cart } = await supabase.from("cart").select("cart_id").eq("buyer_id", userId).single()
-
-      if (!cart) {
-        const { data: newCart, error: cartError } = await supabase
-          .from("cart")
-          .insert({ buyer_id: userId })
-          .select("cart_id")
-          .single()
-
-        if (cartError) throw cartError
-        cart = newCart
-      }
-
-      // Check if item already exists in cart
+      // Check if the item already exists in cart
       const { data: existingItem } = await supabase
         .from("cartitem")
         .select("cart_item_id, quantity")
-        .eq("cart_id", cart.cart_id)
+        .eq("buyer_id", userId)
         .eq("product_id", productId)
         .single()
 
       if (existingItem) {
-        // Update quantity if item exists
+        // Update quantity if it exists
         const { error } = await supabase
           .from("cartitem")
           .update({ quantity: existingItem.quantity + quantity })
@@ -49,9 +35,9 @@ function CartButton({ productId, quantity }) {
         if (error) throw error
         setMessage("Updated quantity in cart!")
       } else {
-        // Add new item to cart
+        // Insert new cart item
         const { error } = await supabase.from("cartitem").insert({
-          cart_id: cart.cart_id,
+          buyer_id: userId,
           product_id: productId,
           quantity: quantity,
         })
@@ -79,7 +65,9 @@ function CartButton({ productId, quantity }) {
         {isAdding ? "Adding..." : "Add to Cart"}
       </button>
       {message && (
-        <p className={`text-sm mt-1 ${message.includes("Error") ? "text-red-500" : "text-green-500"}`}>{message}</p>
+        <p className={`text-sm mt-1 ${message.includes("Error") ? "text-red-500" : "text-green-500"}`}>
+          {message}
+        </p>
       )}
     </div>
   )

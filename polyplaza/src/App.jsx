@@ -21,6 +21,7 @@ import BuyersView from "./Pages/Dashboard/Admin/BuyersView/BuyersView"
 import SellersView from "./Pages/Dashboard/Admin/SellersView/SellersView"
 import OrdersView from "./Pages/Dashboard/Admin/OrdersView/OrdersView"
 import ApplicationsView from "./Pages/Dashboard/Admin/ApplicationView/ApplicationsView"
+import ProductsView from "./Pages/Dashboard/Admin/ProductsView/ProductsView"
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
           <Route path="/dashboard/admin/seller" element={<SellersView />} />
           <Route path="/dashboard/admin/order" element={<OrdersView />} />
           <Route path="/dashboard/admin/application" element={<ApplicationsView />} />
+          <Route path="/dashboard/admin/product" element={<ProductsView />} />
         </Routes>
         <Footer />
       </div>

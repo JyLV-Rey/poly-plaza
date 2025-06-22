@@ -1,6 +1,6 @@
 "use client"
 
-import { BaggageClaimIcon, Clipboard, ShoppingBag, StoreIcon, Menu, X } from "lucide-react"
+import { BaggageClaimIcon, Clipboard, ShoppingBag, StoreIcon, Menu, X, LucideBadgeDollarSign } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
 import { useState } from "react"
 
@@ -81,6 +81,20 @@ function AdminNavBar() {
             >
               <ShoppingBag className="w-5 h-5 flex-shrink-0" />
               {!isCollapsed && <span className="font-medium">Orders List</span>}
+            </Link>
+
+            <Link
+              to="/dashboard/admin/product"
+              onClick={handleMenuClick}
+              className={`flex items-center rounded-xl transition-all duration-200 ${
+                isActive("/dashboard/admin/products")
+                  ? "bg-blue-50 text-blue-700 shadow-sm"
+                  : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+              } ${isCollapsed ? "justify-center p-3" : "gap-3 px-4 py-3"}`}
+              title={isCollapsed ? "Products List" : ""}
+            >
+              <LucideBadgeDollarSign className="w-5 h-5 flex-shrink-0" />
+              {!isCollapsed && <span className="font-medium">Products List</span>}
             </Link>
 
             <Link

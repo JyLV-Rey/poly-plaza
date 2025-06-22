@@ -11,6 +11,7 @@ import CreateReview from "./components/CreateReview"
 import CartButton from "./components/CartButton"
 import { Star, Package, Store, Heart, Share2, ChevronDown, ChevronUp, Box } from "lucide-react"
 import ProductPriceHistoryLineChart from "./components/PriceHistory"
+import { useUser } from "../UserContext"
 
 function ViewProduct() {
   const [item, setItem] = useState([])
@@ -24,9 +25,12 @@ function ViewProduct() {
   const [showReviews, setShowReviews] = useState(false)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
 
+  const { userId } = useUser()
+
   useEffect(() => {
     async function fetchItems() {
       const query = supabase.from("product").select(`
+        seller_id,
         product_id,
         name,
         description,
@@ -39,7 +43,8 @@ function ViewProduct() {
         seller (
           seller_id,
           seller_name,
-          address (street, city, postal_code)
+          address (street, city, postal_code),
+          buyer (buyer_id)
         ),
         review (
           rating,
@@ -217,15 +222,9 @@ function ViewProduct() {
                     </div>
 
                     <div className="flex items-center justify-between mt-4">
-                      <EditButton productId={item.product_id} />
-                      <div className="flex items-center space-x-2">
-                        <button className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors duration-200">
-                          <Heart className="w-5 h-5" />
-                        </button>
-                        <button className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors duration-200">
-                          <Share2 className="w-5 h-5" />
-                        </button>
-                      </div>
+                      { userId === item.seller?.buyer?.buyer_id &&
+                          <EditButton productId={item.product_id} />
+                      }
                     </div>
                   </div>
                 </div>

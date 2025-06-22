@@ -100,9 +100,9 @@ function SellerDashboard() {
               <h1 className='text-4xl text-neutral-700 text-end font-extrabold'>Total Earned: ₱{totals.totalEarned.toLocaleString()}</h1>
               <h2 className='text-xl text-neutral-500 text-end font-bold'>Total Sold: {totals.totalSold.toLocaleString()}</h2>
               <div className='flex flex-row gap-2 align-middle justify-end'>
+                <Link to={`/product/create?sellerId=${sellerId}`} className='bg-blue-500 hover:bg-blue-100 duration-200 ease-(--my-beizer) transform hover:scale-105 hover:text-blue-500 hover:font-extrabold hover:border-2 border-blue-500 text-white font-bold py-2 px-4 rounded w-fit self-end mt-3'>Create Product</Link>
+                <Link to={`/search?&searchStore=${userData.seller_name}`} className='bg-pink-500 hover:bg-pink-100 duration-200 ease-(--my-beizer) transform hover:scale-105 hover:text-pink-500 hover:font-extrabold hover:border-2 border-pink-500 text-white font-bold py-2 px-4 rounded w-fit self-end mt-3'>View Products</Link>
                 <Link to={`/edit/seller?sellerId=${sellerId}`} className='bg-emerald-500 hover:bg-emerald-100 duration-200 ease-(--my-beizer) transform hover:scale-105 hover:text-emerald-500 hover:font-extrabold hover:border-2 border-emerald-500 text-white font-bold py-2 px-4 rounded w-fit self-end mt-3'>Edit Profile</Link>
-                <Link to={`/search?&searchStore=${userData.seller_name}`} className='bg-blue-500 hover:bg-blue-100 duration-200 ease-(--my-beizer) transform hover:scale-105 hover:text-blue-500 hover:font-extrabold hover:border-2 border-blue-500 text-white font-bold py-2 px-4 rounded w-fit self-end mt-3'>View Products</Link>
-                <Link to={`/product/create?sellerId=${sellerId}`} className='bg-pink-500 hover:bg-pink-100 duration-200 ease-(--my-beizer) transform hover:scale-105 hover:text-pink-500 hover:font-extrabold hover:border-2 border-pink-500 text-white font-bold py-2 px-4 rounded w-fit self-end mt-3'>Create Product</Link>
               </div>
             </div>
           </div>
