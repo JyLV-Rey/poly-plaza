@@ -14,7 +14,8 @@ function AddressBook({ setFunction, shouldEdit = false, returnAddress, initialAd
       const { data } = await supabase
         .from("address")
         .select("address_id, street, city, postal_code")
-        .eq("buyer_id", userId);
+        .eq("buyer_id", userId)
+        .order("address_id", { ascending: true });
 
       console.log(data);
       setAddress(data || []);

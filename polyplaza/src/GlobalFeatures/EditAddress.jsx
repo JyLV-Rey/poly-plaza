@@ -1,7 +1,7 @@
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { supabase } from "../supabase";
 import TextField from "../GlobalFeatures/TextField";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 function EditAddress() {
   const [searchParams] = useSearchParams();
@@ -15,7 +15,7 @@ function EditAddress() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!addressId) return; // avoid querying with undefined/null ID
+    if (!addressId) return;
 
     const fetchAddress = async () => {
       const { data, error } = await supabase
@@ -43,7 +43,7 @@ function EditAddress() {
       return;
     }
 
-    const p_code = (postalCode) ? postalCode : null;
+    const p_code = postalCode ? postalCode : null;
 
     const { error } = await supabase
       .from("address")
@@ -59,9 +59,28 @@ function EditAddress() {
     alert("Address updated successfully!");
     navigate(-1);
   }
-  
-  return(
- <div className="relative w-screen min-h-screen overflow-hidden p-20">
+
+  async function handleDelete() {
+    const confirmDelete = window.confirm("Are you sure you want to delete this address?");
+    if (!confirmDelete) return;
+
+    const { error } = await supabase
+      .from("address")
+      .delete()
+      .eq("address_id", addressId);
+
+    if (error) {
+      console.error("Error deleting address:", error.message);
+      setErrorMessage("Failed to delete address. Please try again.");
+      return;
+    }
+
+    alert("Address deleted successfully!");
+    navigate(-1);
+  }
+
+  return (
+    <div className="relative w-screen min-h-screen overflow-hidden p-20">
       <img
         src="/splash-photo.png"
         alt="background"
@@ -90,16 +109,27 @@ function EditAddress() {
               <TextField data={postalCode} color="emerald-400" header="Postal Code" setFunction={setPostalCode} />
             </div>
           </div>
-          <button
-            onClick={handleUpdate}
-            className="bg-emerald-500 hover:bg-emerald-200 hover:border-2 hover:border-emerald-500 hover:text-emerald-500 hover:scale-110 hover:text-2xl duration-200 text-white font-bold py-2 px-4 rounded-xl"
-          >
-            Save Changes
-          </button>
+
+          {/* Buttons */}
+          <div className="flex flex-row gap-4 mt-4">
+            <button
+              onClick={handleUpdate}
+              className="bg-emerald-500 hover:bg-emerald-200 hover:border-2 hover:border-emerald-500 hover:text-emerald-500 hover:scale-110 hover:text-2xl duration-200 text-white font-bold py-2 px-4 rounded-xl"
+            >
+              Save Changes
+            </button>
+
+            <button
+              onClick={handleDelete}
+              className="bg-red-500 hover:bg-red-200 hover:border-2 hover:border-red-500 hover:text-red-500 hover:scale-110 hover:text-2xl duration-200 text-white font-bold py-2 px-4 rounded-xl"
+            >
+              Delete Address
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-export default EditAddress
+export default EditAddress;

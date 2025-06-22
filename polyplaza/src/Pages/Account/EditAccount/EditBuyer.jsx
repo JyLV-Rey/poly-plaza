@@ -4,6 +4,7 @@ import { supabase } from "../../../supabase";
 import TextField from "../../../GlobalFeatures/TextField";
 import "../LoginAccount/style.css";
 import { useUser } from "../../UserContext";
+import AddressBook from "../../../GlobalFeatures/AddressBook";
 
 function EditBuyer() {
   const { userId, setUserEmail, setUserFirstName, setUserLastName} = useUser();
@@ -109,17 +110,21 @@ function EditBuyer() {
             </div>
           )}
 
-          <div className="flex flex-row gap-10 items-center p-5 border-2 border-emerald-200 rounded-2xl">
-            <div className="flex flex-col gap-2 w-auto">
-              <p className="text-left text-emerald-500 text-2xl font-bold">
+          <div className="flex flex-row gap-10 items-start ">
+            <div className="flex flex-col gap-2 w-auto border-2 border-neutral-200 rounded-2xl p-5 ">
+              <p className="text-left text-neutral-500 text-2xl font-bold">
                 Update Your Personal Information:
               </p>
-              <TextField data={firstName} color="emerald-400" header="First Name" setFunction={setFirstName} isRequired />
-              <TextField data={lastName} color="emerald-400" header="Last Name" setFunction={setLastName} isRequired />
-              <TextField data={email} color="emerald-400" header="Email" setFunction={setEmail} isRequired />
-              <TextField data={phone} color="emerald-400" header="Phone Number" setFunction={setPhone} isRequired />
-              <TextField data={password} color="emerald-400" header="Password" setFunction={setPassword} isRequired password />
-              <TextField data={confirmPassword} color="emerald-400" header="Confirm Password" setFunction={setConfirmPassword} isRequired password />
+              <TextField data={firstName} color="neutral-500" header="First Name" setFunction={setFirstName} isRequired />
+              <TextField data={lastName} color="neutral-500" header="Last Name" setFunction={setLastName} isRequired />
+              <TextField data={email} color="neutral-500" header="Email" setFunction={setEmail} isRequired />
+              <TextField data={phone} color="neutral-500" header="Phone Number" setFunction={setPhone} isRequired />
+              <TextField data={password} color="neutral-500" header="Password" setFunction={setPassword} isRequired password />
+              <TextField data={confirmPassword} color="neutral-500" header="Confirm Password" setFunction={setConfirmPassword} isRequired password />
+            </div>
+            <div className="flex flex-col gap-2 w-auto border-2 border-neutral-200 rounded-2xl p-5 ">
+              <p className="text-left text-neutral-500 text-2xl font-bold">Update Your Address:</p>
+              <AddressBook shouldEdit={true} />
             </div>
           </div>
 

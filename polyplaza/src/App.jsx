@@ -22,6 +22,7 @@ import SellersView from "./Pages/Dashboard/Admin/SellersView/SellersView"
 import OrdersView from "./Pages/Dashboard/Admin/OrdersView/OrdersView"
 import ApplicationsView from "./Pages/Dashboard/Admin/ApplicationView/ApplicationsView"
 import ProductsView from "./Pages/Dashboard/Admin/ProductsView/ProductsView"
+import AddAddress from "./GlobalFeatures/AddAddress"
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
           <Route path="/edit/buyer" element={<EditBuyer/>}/>
           <Route path="/edit/seller" element={<EditSeller/>}/>
           <Route path="/edit/address" element={<EditAddress/>}/>
+          <Route path="/add/address" element={<AddAddress/>}/>
           <Route path="/dashboard/admin/buyer" element={<BuyersView />} />
           <Route path="/dashboard/admin/seller" element={<SellersView />} />
           <Route path="/dashboard/admin/order" element={<OrdersView />} />

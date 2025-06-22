@@ -7,6 +7,7 @@ export default function CreateProduct() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
+  const [quantity, setQuantity] = useState('');
   const [category, setCategory] = useState('');
   const [imageUrls, setImageUrls] = useState(['']);
   const [status, setStatus] = useState('');
@@ -24,11 +25,13 @@ export default function CreateProduct() {
       !name ||
       !description ||
       !price ||
+      !quantity ||
       !category ||
       imageUrls.some(url => !url.trim()) ||
-      !/^\d+$/.test(price)
+      !/^\d+$/.test(price) ||
+      !/^\d+$/.test(quantity)
     ) {
-      setStatus('Please fill in all required fields with valid values. Price must be a whole number.');
+      setStatus('Please fill in all required fields. Price and Quantity must be whole numbers.');
       return;
     }
 
@@ -39,7 +42,8 @@ export default function CreateProduct() {
         description,
         price: parseFloat(price),
         category,
-        seller_id: sellerId
+        seller_id: sellerId,
+        quantity: parseInt(quantity),
       })
       .select('product_id')
       .single();
@@ -93,21 +97,22 @@ export default function CreateProduct() {
         <div className="flex flex-row justify-start gap-10 items-start p-5 border-2 border-neutral-300 rounded-2xl">
 
           {/* Product Info */}
-          <div className='flex flex-col p-5 border-2 border-neutral-300 rounded-2xl'>
+          <div className='flex flex-col p-5 border-2 w-150 border-neutral-300 rounded-2xl'>
             <h2 className="text-2xl font-bold text-center text-neutral-700">Product Information</h2>
             <TextField data={name} label="Product Name" header="Product Name" value={name} setFunction={setName} isRequired />
             <TextField data={description} label="Description" header="Description" value={description} setFunction={setDescription} isRequired />
             <TextField data={price} label="Price (₱)" header="Price" type="number" value={price} setFunction={setPrice} isRequired />
+            <TextField data={quantity} label="Quantity" header="Quantity" type="number" value={quantity} setFunction={setQuantity} isRequired />
             <TextField data={category} label="Category" header="Category" value={category} setFunction={setCategory} isRequired />
           </div>
 
           {/* Image Section */}
-          <div className='flex flex-col p-5 border-2 border-neutral-300 rounded-2xl'>
-            <h2 className="text-2xl font-bold text-center text-neutral-700">Product Images</h2>
+          <div className='flex flex-col p-5 border-2 w-150 border-neutral-300 rounded-2xl'>
+            <h2 className="text-2xl font-bold text-center text-neutral-700 ">Product Images</h2>
             {imageUrls.map((url, index) => (
               <div key={index} className='flex flex-col justify-center items-center'>
                 <img src={url} alt="" className='w-50 h-50 object-cover' />
-                <div className='flex flex-row gap-2 items-center'>
+                <div className='flex flex-row gap-2 justify-center items-center w-full'>
                   <TextField
                     data={url}
                     label={`Image URL ${index + 1}`}
