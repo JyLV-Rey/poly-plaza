@@ -7,7 +7,7 @@ import QuantityButton from "./components/QuantityButton"
 import EditButton from "./components/EditButton"
 import CreateReview from "./components/CreateReview"
 import CartButton from "./components/CartButton"
-import { Star, Package, Store, Heart, Share2, ChevronDown, ChevronUp, Box } from "lucide-react"
+import { Star, Package, Store, ChevronDown, ChevronUp, Box } from "lucide-react"
 import ProductPriceHistoryLineChart from "./components/PriceHistory"
 
 function ViewProduct() {
@@ -241,14 +241,6 @@ function ViewProduct() {
 
                   <div className="flex items-center justify-between mt-4">
                     <EditButton productId={item.product_id} />
-                    <div className="flex items-center space-x-2">
-                      <button className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors duration-200">
-                        <Heart className="w-5 h-5" />
-                      </button>
-                      <button className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors duration-200">
-                        <Share2 className="w-5 h-5" />
-                      </button>
-                    </div>
                   </div>
                 </div>
               </div>
