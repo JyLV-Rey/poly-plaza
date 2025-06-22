@@ -44,6 +44,7 @@ function ViewProduct() {
         seller (
           seller_id,
           seller_name,
+          is_deleted,
           address (street, city, postal_code),
           buyer (buyer_id)
         ),
@@ -140,7 +141,7 @@ function ViewProduct() {
     ))
   }
 
-  if(!item.is_deleted) 
+  if(item.is_deleted || item.seller?.is_deleted) 
     return <div className="min-h-screen min-w-screen bg-gray-50 font-extrabold text-neutral-900 flex justify-center items-center text-6xl">Product is disabled</div>
 
   return (

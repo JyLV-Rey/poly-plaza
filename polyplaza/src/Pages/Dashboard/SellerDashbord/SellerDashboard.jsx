@@ -28,6 +28,7 @@ function SellerDashboard() {
         .select(`
           buyer_id,
           seller_name,
+          is_deleted,
           applied_at,
           buyer (
             first_name,
@@ -80,6 +81,9 @@ function SellerDashboard() {
   }, [sellerId]);
 
   if (!userData) return null;
+
+  if (userData?.is_deleted) return <div className="min-h-screen min-w-screen bg-gray-50 font-extrabold text-neutral-900 flex justify-center items-center text-6xl">Seller is Deleted</div>
+
   return (
     <>
       <CheckCredentials>
