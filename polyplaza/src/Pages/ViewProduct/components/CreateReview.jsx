@@ -25,26 +25,53 @@ function CreateReview( {productId} ) {
     }
   }
 
-  async function createReview() {
+async function createReview() {
+  if (!userId) {
+    navigate(`/account/login?redirect=true`);
+    return;
+  }
 
-    if(userId == undefined) {
+  // 1. Check if user has purchased this product
+  const { data: purchases, error: purchaseError } = await supabase
+    .from("order_item")
+    .select(`
+      order_id,
+      order:order_id (
+        buyer_id
+      )
+    `)
+    .eq("product_id", productId);
 
-      navigate(`/account/login?redirect=true`);
-    }
+  if (purchaseError) {
+    console.error("Error checking purchase:", purchaseError);
+    return;
+  }
 
-    const {data, error} = await supabase.from('review')
-    .insert({
-      product_id: productId,
-      rating: rating,
-      comment: newComment,
-      buyer_id: userId
-    })
-    .select()
-    .single();
+  const hasPurchased = purchases.some(p => p.order?.buyer_id === userId);
 
-    console.log(data)
+  if (!hasPurchased) {
+    alert("You can only leave a review if you have purchased this product.");
+    return;
+  }
+
+  // 2. Add review if valid
+    const { data, error } = await supabase.from("review")
+      .insert({
+        product_id: productId,
+        rating: rating,
+        comment: newComment,
+        buyer_id: userId
+      })
+      .select()
+      .single();
+
     if (error) {
-      console.log("it didnt wokr", error);
+      console.error("Error posting review:", error);
+      alert("Failed to post review.");
+    } else {
+      alert("Review posted successfully!");
+      setNewComment("");
+      setRating(2);
     }
   }
 

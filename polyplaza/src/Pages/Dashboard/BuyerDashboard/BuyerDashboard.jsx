@@ -73,7 +73,10 @@ function BuyerDashboard() {
             <div className='flex flex-col gap-2'>
               <h1 className='text-4xl text-neutral-700 text-end font-extrabold'>Total Spent: ₱{totalSpent.toLocaleString()}</h1>
               <h2 className='text-xl text-neutral-500 text-end font-bold'>Total Orders: {totalOrders.toLocaleString()}</h2>
-              <Link to={`/edit/buyer?buyerId=${buyerId}`} className='bg-emerald-500 hover:bg-emerald-100 duration-200 ease-(--my-beizer) transform hover:scale-105 hover:text-emerald-500 hover:font-extrabold hover:border-2 border-emerald-500 text-white font-bold py-2 px-4 rounded w-fit self-end mt-3'>Edit Profile</Link>
+              <div className='flex flex-row gap-2 self-end'>
+                <Link to={`/orders?buyerId=${buyerId}`} className='bg-pink-500 hover:bg-pink-100 duration-200 ease-(--my-beizer) transform hover:scale-105 hover:text-pink-500 hover:font-extrabold hover:border-2 border-pink-500 text-white font-bold py-2 px-4 rounded w-fit self-end mt-3'>View Orders</Link>
+                <Link to={`/edit/buyer?buyerId=${buyerId}`} className='bg-emerald-500 hover:bg-emerald-100 duration-200 ease-(--my-beizer) transform hover:scale-105 hover:text-emerald-500 hover:font-extrabold hover:border-2 border-emerald-500 text-white font-bold py-2 px-4 rounded w-fit self-end mt-3'>Edit Profile</Link>
+              </div>
             </div>
           </div>
 

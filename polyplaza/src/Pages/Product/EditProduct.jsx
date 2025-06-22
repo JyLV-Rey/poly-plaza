@@ -141,9 +141,9 @@ export default function EditProduct() {
     <div className='flex flex-col items-center justify-center mt-30 self-center bg-neutral-100 shadow-xl'>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-4 border justify-start items-center rounded-xl w-full bg-white shadow-md text-neutral-500">
         <h2 className="text-4xl font-bold text-center text-neutral-700">Edit Product</h2>
-        <div className="flex flex-row justify-start gap-10 items-start p-5 border-2 border-neutral-300 rounded-2xl">
+        <div className="flex flex-row justify-start w-auto gap-10 items-start p-5 border-2 border-neutral-300 rounded-2xl">
 
-          <div className='flex flex-col p-5 border-2 border-neutral-300 rounded-2xl'>
+          <div className='flex flex-col p-5 border-2 w-200 border-neutral-300 rounded-2xl'>
             <h2 className="text-2xl font-bold text-center text-neutral-700">Edit Information</h2>
             <TextField data={name} label="Product Name" header="Product Name" value={name} setFunction={setName} isRequired />
             <TextField data={description} label="Description" header="Description" value={description} setFunction={setDescription} isRequired />

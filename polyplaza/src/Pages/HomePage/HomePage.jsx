@@ -121,7 +121,12 @@ function HomePage() {
     <div className="min-h-screen bg-gray-50 w-full">
       <UserDebugger />
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-bl from-pink-500 to-red-500 pt-32 pb-20">
+      <div className="relative pt-32 pb-20">
+      <img
+        src="/splash-photo.png"
+        alt="background"
+        className="absolute inset-0 w-full h-full object-cover z-0"
+      />
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Greeting */}
