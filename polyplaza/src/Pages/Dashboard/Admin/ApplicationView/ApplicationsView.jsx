@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import AdminNavBar from "../AdminNavBar"
-import { Check, X, Clock, User, Calendar, FileText, ExternalLink, Phone, Mail, Store } from "lucide-react"
+import { Check, X, Clock, User, Calendar, FileText, ExternalLink, Phone, Mail, Store, MapPin } from "lucide-react"
 import { supabase } from "../../../../supabase"
 
 function ApplicationsView() {
@@ -23,12 +23,19 @@ function ApplicationsView() {
           application_date,
           valid_id_url,
           status,
+          address_id,
           buyer:buyer_id (
             buyer_id,
             first_name,
             last_name,
             email,
             phone
+          ),
+          address:address_id (
+            address_id,
+            street,
+            city,
+            postal_code
           )
         `)
         .order("application_date", { ascending: false })
@@ -37,7 +44,26 @@ function ApplicationsView() {
         throw error
       }
 
-      setApplications(data || [])
+      // For approved applications, fetch seller data separately
+      const applicationsWithSellers = await Promise.all(
+        data.map(async (app) => {
+          if (app.status === "Approved") {
+            const { data: sellerData } = await supabase
+              .from("seller")
+              .select("seller_id, applied_at")
+              .eq("application_id", app.application_id)
+              .single()
+
+            return {
+              ...app,
+              seller_info: sellerData,
+            }
+          }
+          return app
+        }),
+      )
+
+      setApplications(applicationsWithSellers || [])
     } catch (err) {
       console.error("Error fetching applications:", err)
       setError(err.message)
@@ -50,24 +76,61 @@ function ApplicationsView() {
     fetchApplications()
   }, [])
 
-  const handleAccept = async (applicationId) => {
+  const handleAccept = async (application) => {
     try {
-      const { error } = await supabase
+      // Start a transaction-like operation
+      const { error: updateError } = await supabase
         .from("seller_application")
         .update({ status: "Approved" })
-        .eq("application_id", applicationId)
+        .eq("application_id", application.application_id)
 
-      if (error) {
-        throw error
+      if (updateError) {
+        throw updateError
       }
 
-      // Update local state
+      // Create seller record
+      const { data: sellerData, error: sellerError } = await supabase
+        .from("seller")
+        .insert({
+          buyer_id: application.buyer.buyer_id,
+          address_id: application.address_id,
+          seller_name: application.seller_name,
+          application_id: application.application_id,
+        })
+        .select()
+
+      if (sellerError) {
+        // Rollback the status update if seller creation fails
+        await supabase
+          .from("seller_application")
+          .update({ status: "Pending" })
+          .eq("application_id", application.application_id)
+
+        throw sellerError
+      }
+
+      // Update local state with approval date
       setApplications((prev) =>
-        prev.map((app) => (app.application_id === applicationId ? { ...app, status: "Approved" } : app)),
+        prev.map((app) =>
+          app.application_id === application.application_id
+            ? {
+                ...app,
+                status: "Approved",
+                seller_info: sellerData[0]
+                  ? {
+                      seller_id: sellerData[0].seller_id,
+                      applied_at: sellerData[0].applied_at,
+                    }
+                  : null,
+              }
+            : app,
+        ),
       )
+
+      alert("Application approved successfully!")
     } catch (err) {
       console.error("Error accepting application:", err)
-      alert("Failed to accept application. Please try again.")
+      alert(`Failed to approve application: ${err.message}`)
     }
   }
 
@@ -82,13 +145,18 @@ function ApplicationsView() {
         throw error
       }
 
-      // Update local state
+      // Update local state with current timestamp as rejection date
+      const rejectionDate = new Date().toISOString()
       setApplications((prev) =>
-        prev.map((app) => (app.application_id === applicationId ? { ...app, status: "Rejected" } : app)),
+        prev.map((app) =>
+          app.application_id === applicationId ? { ...app, status: "Rejected", rejection_date: rejectionDate } : app,
+        ),
       )
+
+      alert("Application rejected successfully!")
     } catch (err) {
       console.error("Error rejecting application:", err)
-      alert("Failed to reject application. Please try again.")
+      alert(`Failed to reject application: ${err.message}`)
     }
   }
 
@@ -113,6 +181,12 @@ function ApplicationsView() {
       hour: "2-digit",
       minute: "2-digit",
     })
+  }
+
+  const formatAddress = (address) => {
+    if (!address) return "Address not provided"
+    const parts = [address.street, address.city, address.postal_code].filter(Boolean)
+    return parts.join(", ")
   }
 
   const getApplicationCounts = () => {
@@ -277,6 +351,13 @@ function ApplicationsView() {
                               <Calendar className="w-4 h-4" />
                               <span>Applied: {formatDate(application.application_date)}</span>
                             </div>
+                            {/* Show approval date for approved applications */}
+                            {application.status === "Approved" && application.seller_info && (
+                              <div className="flex items-center gap-1 text-sm text-green-600 mt-1">
+                                <Check className="w-4 h-4" />
+                                <span>Approved: {formatDate(application.seller_info.applied_at)}</span>
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -300,6 +381,14 @@ function ApplicationsView() {
                                 {application.buyer?.first_name} {application.buyer?.last_name}
                               </p>
                             </div>
+
+                            <div>
+                              <label className="flex items-center gap-2 text-sm font-medium text-neutral-700 mb-1">
+                                <MapPin className="w-4 h-4" />
+                                Seller Address:
+                              </label>
+                              <p className="text-neutral-900">{formatAddress(application.address)}</p>
+                            </div>
                           </div>
 
                           <div className="space-y-3">
@@ -318,24 +407,24 @@ function ApplicationsView() {
                               </label>
                               <p className="text-neutral-900">{application.buyer?.phone || "Not provided"}</p>
                             </div>
-                          </div>
-                        </div>
 
-                        {/* Valid ID Photo */}
-                        <div>
-                          <label className="flex items-center gap-2 text-sm font-medium text-neutral-700 mb-2">
-                            <FileText className="w-4 h-4" />
-                            Valid ID Photo:
-                          </label>
-                          <a
-                            href={application.valid_id_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-2xl hover:bg-blue-100 transition-colors duration-200 font-medium"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                            View ID Document
-                          </a>
+                            {/* Valid ID Photo - moved here for better balance */}
+                            <div>
+                              <label className="flex items-center gap-2 text-sm font-medium text-neutral-700 mb-2">
+                                <FileText className="w-4 h-4" />
+                                Valid ID Photo:
+                              </label>
+                              <a
+                                href={application.valid_id_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-2xl hover:bg-blue-100 transition-colors duration-200 font-medium"
+                              >
+                                <ExternalLink className="w-4 h-4" />
+                                View ID Document
+                              </a>
+                            </div>
+                          </div>
                         </div>
                       </div>
 
@@ -344,7 +433,7 @@ function ApplicationsView() {
                         {activeTab === "pending" && (
                           <div className="flex flex-col gap-3">
                             <button
-                              onClick={() => handleAccept(application.application_id)}
+                              onClick={() => handleAccept(application)}
                               className="flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white rounded-2xl hover:bg-green-700 transition-colors duration-200 font-medium whitespace-nowrap"
                             >
                               <Check className="w-5 h-5" />
