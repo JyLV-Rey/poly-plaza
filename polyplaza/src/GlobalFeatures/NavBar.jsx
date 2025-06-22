@@ -27,7 +27,9 @@ function NavBar() {
           <div className="flex items-center space-x-3">
             <Link to="/" className="flex items-center space-x-3">
               <img src="/logo.png" alt="PolyPlaza" className="h-12 w-auto" />
-              <span className="text-2xl font-bold text-gray-900">PolyPlaza</span>
+              <span className="text-2xl font-bold" style={{ color: "#800000" }}>
+                PolyPlaza
+              </span>
             </Link>
           </div>
 
