@@ -24,25 +24,19 @@ function ProductList({ searchTerm, searchCategory, isDescending, sortBy, maxPric
     setLoading(true)
     setError(null)
 
-    let query = supabase.from("product").select(`
-        product_id,
-        name,
-        category,
-        quantity,
-        price,
-        product_image (
-          image_url
-        ),
-        seller (
-          seller_name
-        ),
-        review (
-          rating
-        ),
-        order_item (
-          quantity
-        )
-      `).eq("is_deleted", false);
+  let query = supabase.from("active_products").select(`
+    product_id,
+    name,
+    category,
+    quantity,
+    price,
+    product_image (image_url),
+    seller (
+      seller_name
+    ),
+    review (rating),
+    order_item (quantity)
+  `).eq("is_deleted", false);
     
     if (searchStore) {
       const { data: sellers, error: sellerError } = await supabase

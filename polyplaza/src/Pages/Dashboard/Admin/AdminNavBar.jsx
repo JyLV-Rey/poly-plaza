@@ -1,35 +1,65 @@
-import { BaggageClaim, BaggageClaimIcon, Clipboard, ShoppingBag, StoreIcon } from "lucide-react"
-import { Link } from "react-router-dom"
-
+import { BaggageClaimIcon, Clipboard, ShoppingBag, StoreIcon } from "lucide-react"
+import { Link, useLocation } from "react-router-dom"
 
 function AdminNavBar() {
+  const location = useLocation()
+
+  const isActive = (path) => location.pathname === path
+
   return (
-    <div className="fixed z-50 w-full mt-20 text-sm flex p-1 flex-row justify-center items-center text-neutral-700 bg-neutral-300">
-      <nav className="flex flex-row self-center gap-20  pl-20 pr-20 rounded-br-2xl rounded-bl-2xl">
-        <Link to='/dashboard/admin/buyer' className="flex flex-row gap-2 items-center hover:scale-105 ease-(--my-beizer) duration-200 hover:font-bold hover:bg-neutral-500 hover:text-neutral-50 rounded-lg p-2
-        ">
-          <BaggageClaimIcon />
-          <p>Buyers List</p>
-        </Link>
+    <div className="fixed left-0 top-20 h-[calc(100vh-5rem)] w-64 bg-white shadow-lg border-r border-gray-200 z-40">
+      <div className="p-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-8">Admin Dashboard</h2>
+        <nav className="space-y-2">
+          <Link
+            to="/dashboard/admin/buyer"
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+              isActive("/dashboard/admin/buyer")
+                ? "bg-blue-50 text-blue-700 shadow-sm"
+                : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+            }`}
+          >
+            <BaggageClaimIcon className="w-5 h-5" />
+            <span className="font-medium">Buyers List</span>
+          </Link>
 
-        <Link to='/dashboard/admin/seller' className="flex flex-row gap-2 items-center hover:scale-105 ease-(--my-beizer) duration-200 hover:font-bold hover:bg-neutral-500 hover:text-neutral-50 rounded-lg p-2
-        ">
-          <StoreIcon />
-          <p>Sellers List</p>
-        </Link>
+          <Link
+            to="/dashboard/admin/seller"
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+              isActive("/dashboard/admin/seller")
+                ? "bg-blue-50 text-blue-700 shadow-sm"
+                : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+            }`}
+          >
+            <StoreIcon className="w-5 h-5" />
+            <span className="font-medium">Sellers List</span>
+          </Link>
 
-        <Link to='/dashboard/admin/order' className="flex flex-row gap-2 items-center hover:scale-105 ease-(--my-beizer) duration-200 hover:font-bold hover:bg-neutral-500 hover:text-neutral-50 rounded-lg p-2
-        ">
-          <ShoppingBag />
-          <p>Orders List</p>
-        </Link>
+          <Link
+            to="/dashboard/admin/order"
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+              isActive("/dashboard/admin/order")
+                ? "bg-blue-50 text-blue-700 shadow-sm"
+                : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+            }`}
+          >
+            <ShoppingBag className="w-5 h-5" />
+            <span className="font-medium">Orders List</span>
+          </Link>
 
-        <Link to='/dashboard/admin/application' className="flex flex-row gap-2 items-center hover:scale-105 ease-(--my-beizer) duration-200 hover:font-bold hover:bg-neutral-500 hover:text-neutral-50 rounded-lg p-2
-        ">
-          <Clipboard />
-          <p>Applications List</p>
-        </Link>
-      </nav>
+          <Link
+            to="/dashboard/admin/application"
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+              isActive("/dashboard/admin/application")
+                ? "bg-blue-50 text-blue-700 shadow-sm"
+                : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+            }`}
+          >
+            <Clipboard className="w-5 h-5" />
+            <span className="font-medium">Applications</span>
+          </Link>
+        </nav>
+      </div>
     </div>
   )
 }
