@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { useUser } from "../../UserContext"
 import { supabase } from "../../../supabase"
@@ -17,7 +15,22 @@ function CartButton({ productId, quantity }) {
 
     setIsAdding(true)
     try {
-      // Check if the item already exists in cart
+      // First, check current product stock
+      const { data: productData, error: productError } = await supabase
+        .from("product")
+        .select("quantity")
+        .eq("product_id", productId)
+        .single()
+
+      if (productError) throw productError
+
+      if (!productData.quantity || productData.quantity <= 0) {
+        setMessage("Product is out of stock")
+        setTimeout(() => setMessage(""), 3000)
+        return
+      }
+
+      // Check if item already exists in cart
       const { data: existingItem } = await supabase
         .from("cartitem")
         .select("cart_item_id, quantity")
@@ -25,17 +38,33 @@ function CartButton({ productId, quantity }) {
         .eq("product_id", productId)
         .single()
 
+      const newTotalQuantity = existingItem ? existingItem.quantity + quantity : quantity
+
+      // Check if new total quantity exceeds available stock
+      if (newTotalQuantity > productData.quantity) {
+        const availableToAdd = productData.quantity - (existingItem?.quantity || 0)
+        if (availableToAdd <= 0) {
+          setMessage("Cannot add more items - already at maximum available quantity in cart")
+        } else {
+          setMessage(
+            `Can only add ${availableToAdd} more items (${productData.quantity} available, ${existingItem?.quantity || 0} already in cart)`,
+          )
+        }
+        setTimeout(() => setMessage(""), 5000)
+        return
+      }
+
       if (existingItem) {
-        // Update quantity if it exists
+        // Update quantity if item exists
         const { error } = await supabase
           .from("cartitem")
-          .update({ quantity: existingItem.quantity + quantity })
+          .update({ quantity: newTotalQuantity })
           .eq("cart_item_id", existingItem.cart_item_id)
 
         if (error) throw error
-        setMessage("Updated quantity in cart!")
+        setMessage(`Updated quantity in cart! (${newTotalQuantity} total)`)
       } else {
-        // Insert new cart item
+        // Add new item to cart
         const { error } = await supabase.from("cartitem").insert({
           buyer_id: userId,
           product_id: productId,
@@ -50,6 +79,7 @@ function CartButton({ productId, quantity }) {
     } catch (error) {
       console.error("Error adding to cart:", error)
       setMessage("Error adding to cart")
+      setTimeout(() => setMessage(""), 3000)
     } finally {
       setIsAdding(false)
     }
@@ -65,7 +95,9 @@ function CartButton({ productId, quantity }) {
         {isAdding ? "Adding..." : "Add to Cart"}
       </button>
       {message && (
-        <p className={`text-sm mt-1 ${message.includes("Error") ? "text-red-500" : "text-green-500"}`}>
+        <p
+          className={`text-sm mt-1 text-center max-w-xs ${message.includes("Error") || message.includes("Cannot") || message.includes("Can only") ? "text-red-500" : "text-green-500"}`}
+        >
           {message}
         </p>
       )}
