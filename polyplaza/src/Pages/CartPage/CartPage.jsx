@@ -24,6 +24,9 @@ function CartPage() {
         .from("cartitem")
         .select(`
           cart_item_id,
+          buyer (
+            is_deleted
+          ),
           quantity,
           product:product_id (
             product_id,
@@ -171,6 +174,9 @@ function CartPage() {
   const selectedTotal = selectedItemsData.reduce((total, item) => total + item.product.price * item.quantity, 0)
   const totalPrice = cartItems.reduce((total, item) => total + item.product.price * item.quantity, 0)
   const selectableItems = getSelectableItems()
+
+  console.log(cartItems[0]?.buyer?.is_deleted);
+  if (cartItems.length > 0 && cartItems[0]?.buyer?.is_deleted) return <div className="min-h-screen min-w-screen bg-gray-50 font-extrabold text-neutral-900 flex justify-center items-center text-6xl">Buyer Account is Deleted</div>
 
   if (loading) {
     return (

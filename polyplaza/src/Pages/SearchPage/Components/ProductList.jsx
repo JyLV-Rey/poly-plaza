@@ -147,50 +147,67 @@ function ProductList({ searchTerm, searchCategory, isDescending, sortBy, maxPric
     return quantities.reduce((a, b) => a + b, 0)
   }
 
-  async function addToCart(productId) {
-    if (!userId) {
-      setMessages((prev) => ({ ...prev, [productId]: "Please login to add items to cart" }))
-      setTimeout(() => setMessages((prev) => ({ ...prev, [productId]: "" })), 3000)
+async function addToCart(productId) {
+  if (!userId) {
+    setMessages((prev) => ({ ...prev, [productId]: "Please login to add items to cart" }))
+    setTimeout(() => setMessages((prev) => ({ ...prev, [productId]: "" })), 3000)
+    return
+  }
+
+  setAddingToCart((prev) => ({ ...prev, [productId]: true }))
+
+  try {
+    // ✅ Step 1: Check if buyer is deleted
+    const { data: buyerData, error: buyerError } = await supabase
+      .from("buyer")
+      .select("is_deleted")
+      .eq("buyer_id", userId)
+      .single()
+
+    if (buyerError) throw buyerError
+    if (buyerData?.is_deleted) {
+      setMessages((prev) => ({ ...prev, [productId]: "Your account is deleted. Cannot add to cart." }))
+      setTimeout(() => setMessages((prev) => ({ ...prev, [productId]: "" })), 5000)
       return
     }
 
-    setAddingToCart((prev) => ({ ...prev, [productId]: true }))
-    try {
-      const { data: existingItem } = await supabase
+    // ✅ Step 2: Check if product is already in cart
+    const { data: existingItem } = await supabase
+      .from("cartitem")
+      .select("cart_item_id, quantity")
+      .eq("buyer_id", userId)
+      .eq("product_id", productId)
+      .single()
+
+    if (existingItem) {
+      const { error } = await supabase
         .from("cartitem")
-        .select("cart_item_id, quantity")
-        .eq("buyer_id", userId)
-        .eq("product_id", productId)
-        .single()
+        .update({ quantity: existingItem.quantity + 1 })
+        .eq("cart_item_id", existingItem.cart_item_id)
 
-      if (existingItem) {
-        const { error } = await supabase
-          .from("cartitem")
-          .update({ quantity: existingItem.quantity + 1 })
-          .eq("cart_item_id", existingItem.cart_item_id)
+      if (error) throw error
+      setMessages((prev) => ({ ...prev, [productId]: "Updated quantity in cart!" }))
+    } else {
+      const { error } = await supabase.from("cartitem").insert({
+        buyer_id: userId,
+        product_id: productId,
+        quantity: 1,
+      })
 
-        if (error) throw error
-        setMessages((prev) => ({ ...prev, [productId]: "Updated quantity in cart!" }))
-      } else {
-        const { error } = await supabase.from("cartitem").insert({
-          buyer_id: userId,
-          product_id: productId,
-          quantity: 1,
-        })
-
-        if (error) throw error
-        setMessages((prev) => ({ ...prev, [productId]: "Added to cart!" }))
-      }
-
-      setTimeout(() => setMessages((prev) => ({ ...prev, [productId]: "" })), 3000)
-    } catch (error) {
-      console.error("Error adding to cart:", error)
-      setMessages((prev) => ({ ...prev, [productId]: "Error adding to cart" }))
-      setTimeout(() => setMessages((prev) => ({ ...prev, [productId]: "" })), 3000)
-    } finally {
-      setAddingToCart((prev) => ({ ...prev, [productId]: false }))
+      if (error) throw error
+      setMessages((prev) => ({ ...prev, [productId]: "Added to cart!" }))
     }
+
+    setTimeout(() => setMessages((prev) => ({ ...prev, [productId]: "" })), 3000)
+  } catch (error) {
+    console.error("Error adding to cart:", error)
+    setMessages((prev) => ({ ...prev, [productId]: "Error adding to cart" }))
+    setTimeout(() => setMessages((prev) => ({ ...prev, [productId]: "" })), 3000)
+  } finally {
+    setAddingToCart((prev) => ({ ...prev, [productId]: false }))
   }
+}
+
 
 
   function renderProductCard(item) {

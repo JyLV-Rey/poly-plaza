@@ -12,7 +12,29 @@ function ConfirmOrderPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { userId } = useUser()
+useEffect(() => {
+  async function checkBuyerStatus() {
+    if (!userId) return;
 
+    const { data, error } = await supabase
+      .from("buyer")
+      .select("is_deleted")
+      .eq("buyer_id", userId)
+      .single();
+
+    if (error) {
+      console.error("Error checking buyer status:", error);
+      return;
+    }
+
+    if (data?.is_deleted) {
+      window.alert("Your account has been deleted. You cannot place an order.");
+      navigate("/");
+    }
+  }
+
+  checkBuyerStatus();
+}, [userId, navigate]);
   const productId = searchParams.get("productId")
   const quantity = searchParams.get("quantity")
   const cartItemIds = searchParams.get("cartItems")
